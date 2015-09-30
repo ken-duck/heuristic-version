@@ -1,6 +1,7 @@
-package net.ossindex.common.version;
+package net.ossindex.version;
 
 import static org.junit.Assert.assertTrue;
+import net.ossindex.version.impl.VersionRange;
 
 import org.junit.Test;
 

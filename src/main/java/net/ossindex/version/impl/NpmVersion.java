@@ -24,7 +24,9 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.common.version;
+package net.ossindex.version.impl;
+
+import net.ossindex.version.IVersion;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
  * @author Ken Duck
  *
  */
-public class NpmVersion extends SemanticVersion
+public class NpmVersion extends FlexibleSemanticVersion implements IVersion
 {
 	private static final Logger LOG = LoggerFactory.getLogger(NpmVersion.class);
 	/**

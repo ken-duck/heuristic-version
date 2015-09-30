@@ -2,7 +2,7 @@
  * Copyright (c) 2015 TwoDucks, Inc.
  * All rights reserved.
  ************************************************************************/
-package net.ossindex.common.version;
+package net.ossindex.version.impl;
 
 import com.github.zafarkhaja.semver.Version;
 
@@ -95,7 +95,7 @@ public class VersionRange
 		// Try looser semantic versions
 		try
 		{
-			SemanticVersion v1 = new SemanticVersion(range1);
+			FlexibleSemanticVersion v1 = new FlexibleSemanticVersion(range1);
 			return v1.satisfies(range2);
 		}
 		catch(Exception e)
@@ -105,7 +105,7 @@ public class VersionRange
 		
 		try
 		{
-			SemanticVersion v2 = new SemanticVersion(range2);
+			FlexibleSemanticVersion v2 = new FlexibleSemanticVersion(range2);
 			return v2.satisfies(range1);
 		}
 		catch(Exception e)

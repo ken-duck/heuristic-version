@@ -24,33 +24,29 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.common.version;
+package net.ossindex.version.impl;
 
-import com.github.zafarkhaja.semver.Version;
+import net.ossindex.version.IVersion;
 
-/** Useful docs here: https://github.com/zafarkhaja/jsemver
- * 
- * Semantic version parsing code.
- * 
- * Semantic versioning is described here: http://semver.org/
+/** SemanticVersion extension that allows for somewhat more broad matching
+ * by "repairing" the version.
  * 
  * Subclass this class to provide special preprocessing and comparison handling.
  * 
  * @author Ken Duck
  *
  */
-public class SemanticVersion implements Comparable<SemanticVersion>
+public class FlexibleSemanticVersion extends SemanticVersion implements Comparable<IVersion>, IVersion
 {
-	private Version v;
-	
 	/** Use an external library for parsing.
 	 * 
 	 * @param buf
 	 */
-	public SemanticVersion(String buf)
+	public FlexibleSemanticVersion(String buf)
 	{
-		v = Version.valueOf(preprocess(buf));
+		setVersion(preprocess(buf));
 	}
+
 
 	/** Ensure there is a hyphen before the suffix
 	 * 
@@ -107,154 +103,5 @@ public class SemanticVersion implements Comparable<SemanticVersion>
 			buf = buf.substring(0, index) + "-" + suffix;
 		}
 		return buf;
-	}
-
-	/**
-	 * Special case for when we cannot parse a semantic version.
-	 */
-	public SemanticVersion()
-	{
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int getMajor()
-	{
-		if(v == null) return 0;
-		return v.getMajorVersion();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int getMinor()
-	{
-		if(v == null) return 0;
-		return v.getMinorVersion();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public int getPatch()
-	{
-		if(v == null) return 0;
-		return v.getPatchVersion();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isNamed()
-	{
-		return v == null;
-	}
-
-	/**
-	 * 
-	 * @param range
-	 * @return
-	 */
-	public boolean satisfies(String range)
-	{
-		if(v == null) return false;
-		
-		// Convert some range variants to what the Version class expects
-		if(range.endsWith(".x")) range = range.substring(0, range.length() - 2);
-		
-		return v.satisfies(range);
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object o)
-	{
-		if(o instanceof SemanticVersion)
-		{
-			SemanticVersion v = (SemanticVersion)o;
-			if(this.v != null)
-			{
-				return this.v.equals(v.v);
-			}
-			else
-			{
-				return super.equals(v);
-			}
-		}
-		return false;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode()
-	{
-		if(v != null)
-		{
-			return v.hashCode();
-		}
-		return super.hashCode();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(SemanticVersion other)
-	{
-		if(this.isNamed())
-		{
-			if(other.isNamed())
-			{
-				// If they are both named, compare them as strings
-				return toString().compareTo(other.toString());
-			}
-			else
-			{
-				return -1;
-			}
-		}
-		else if(other.isNamed())
-		{
-			return 1;
-		}
-		
-		// If neither is named, then compare them as semantic values
-		return this.v.compareTo(other.v);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString()
-	{
-		return v.toString();
-	}
-
-	/** Returns true if this represents a stable release. We take this to mean
-	 * unnamed and no suffix.
-	 * 
-	 * @return
-	 */
-	public boolean isStable()
-	{
-		if(!isNamed())
-		{
-			return true;
-		}
-		return false;
 	}
 }
