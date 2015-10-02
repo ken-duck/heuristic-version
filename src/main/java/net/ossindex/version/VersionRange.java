@@ -2,7 +2,9 @@
  * Copyright (c) 2015 TwoDucks, Inc.
  * All rights reserved.
  ************************************************************************/
-package net.ossindex.version.impl;
+package net.ossindex.version;
+
+import net.ossindex.version.impl.FlexibleSemanticVersion;
 
 import com.github.zafarkhaja.semver.Version;
 
