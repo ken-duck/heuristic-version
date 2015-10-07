@@ -46,7 +46,7 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	
 	/** Use an external library for parsing.
 	 * 
-	 * @param buf
+	 * @param buf Version we are trying to parse
 	 */
 	public SemanticVersion(String buf)
 	{
@@ -60,48 +60,51 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	
 	/** Set the version
 	 * 
-	 * @param buf
+	 * @param buf Version we are trying to parse
 	 */
 	protected void setVersion(String buf)
 	{
 		v = Version.valueOf(buf);
 	}
 
-	/**
-	 * 
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#getMajor()
 	 */
+	@Override
 	public int getMajor()
 	{
 		if(v == null) return 0;
 		return v.getMajorVersion();
 	}
 
-	/**
-	 * 
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#getMinor()
 	 */
+	@Override
 	public int getMinor()
 	{
 		if(v == null) return 0;
 		return v.getMinorVersion();
 	}
 
-	/**
-	 * 
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#getPatch()
 	 */
+	@Override
 	public int getPatch()
 	{
 		if(v == null) return 0;
 		return v.getPatchVersion();
 	}
 
-	/**
-	 * 
-	 * @param range
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#satisfies(java.lang.String)
 	 */
+	@Override
 	public boolean satisfies(String range)
 	{
 		if(v == null) return false;
@@ -188,7 +191,7 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	/** Returns true if this represents a stable release. We take this to mean
 	 * unnamed and no suffix.
 	 * 
-	 * @return
+	 * @return True if this is a stable release.
 	 */
 	public boolean isStable()
 	{

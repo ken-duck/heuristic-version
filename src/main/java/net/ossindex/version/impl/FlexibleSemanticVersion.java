@@ -40,7 +40,7 @@ public class FlexibleSemanticVersion extends SemanticVersion implements Comparab
 {
 	/** Use an external library for parsing.
 	 * 
-	 * @param buf
+	 * @param buf Version string to parse
 	 */
 	public FlexibleSemanticVersion(String buf)
 	{
@@ -50,8 +50,8 @@ public class FlexibleSemanticVersion extends SemanticVersion implements Comparab
 
 	/** Ensure there is a hyphen before the suffix
 	 * 
-	 * @param buf
-	 * @return
+	 * @param buf Version string to parse
+	 * @return A simplified string
 	 */
 	private String preprocess(String buf)
 	{

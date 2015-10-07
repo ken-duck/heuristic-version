@@ -38,8 +38,8 @@ public class VersionRange
 
 	/** Return true if the provided range intersects our range
 	 * 
-	 * @param yourRange
-	 * @return
+	 * @param yourRange Version range we are trying to intersect with
+	 * @return True if these two ranges intersect
 	 */
 	public boolean intersects(VersionRange range)
 	{
@@ -50,11 +50,11 @@ public class VersionRange
 		return false;
 	}
 
-	/** Given two semantic ranges, see if they intersect
+	/** Given two ranges, see if they intersect
 	 * 
-	 * @param myRange
-	 * @param range
-	 * @return
+	 * @param range1 First range we are trying to intersect
+	 * @param range2 Second range we are trying to intersect
+	 * @return true if these ranges intersect
 	 */
 	private boolean intersects(String range1, VersionRange range2)
 	{
@@ -65,11 +65,11 @@ public class VersionRange
 		return false;
 	}
 
-	/**
+	/** Given two ranges, see if they intersect
 	 * 
-	 * @param range1
-	 * @param range2
-	 * @return
+	 * @param range1 First range we are trying to intersect
+	 * @param range2 Second range we are trying to intersect
+	 * @return true if these ranges intersect
 	 */
 	private boolean intersects(String range1, String range2)
 	{
@@ -115,9 +115,6 @@ public class VersionRange
 			// Ignore
 		}
 		
-
-		
-		// TODO Auto-generated method stub
 		return false;
 	}
 

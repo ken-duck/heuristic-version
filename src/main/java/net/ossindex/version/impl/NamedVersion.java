@@ -58,8 +58,8 @@ public class NamedVersion implements IVersion
 	 * thing as a range since we cannot be certain that order means anything
 	 * in this case.
 	 * 
-	 * @param range
-	 * @return
+	 * @param range Range we are checking this version against
+	 * @return true if the range and this version matches
 	 */
 	@Override
 	public boolean satisfies(String range)

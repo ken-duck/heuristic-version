@@ -35,7 +35,6 @@ import net.ossindex.version.impl.NpmVersion;
 import net.ossindex.version.impl.SemanticVersion;
 
 import com.github.zafarkhaja.semver.ParseException;
-import com.github.zafarkhaja.semver.UnexpectedCharacterException;
 
 /** This factory provides an appropriate version implementation for
  * specified version strings.
@@ -60,7 +59,7 @@ public class VersionFactory
 	
 	/**
 	 * 
-	 * @return
+	 * @return The instance of the version factory
 	 */
 	public synchronized static VersionFactory getVersionFactory()
 	{
@@ -70,8 +69,8 @@ public class VersionFactory
 	
 	/** Get a version implementation. Return the best match for the provided string.
 	 * 
-	 * @param version
-	 * @return
+	 * @param version A string version to be parsed
+	 * @return A version implementation
 	 */
 	public IVersion getVersion(String buf)
 	{
@@ -101,9 +100,9 @@ public class VersionFactory
 	/** Get a version implementation. A hint may be provided to help
 	 * choose the best implementation.
 	 * 
-	 * @param hint
-	 * @param version
-	 * @return
+	 * @param hint Hint of the version style
+	 * @param version A string version to be parsed
+	 * @return A version implementation
 	 */
 	public IVersion getVersion(String hint, String version)
 	{
@@ -117,6 +116,11 @@ public class VersionFactory
 		return getVersion(version);
 	}
 	
+	/**
+	 * 
+	 * @param buf A string version to be parsed
+	 * @return A version implementation if successful
+	 */
 	private FlexibleSemanticVersion getFlexibleVersion(String buf)
 	{
 		VersionParts parts = preprocess(buf);
@@ -165,8 +169,8 @@ public class VersionFactory
 	 * remainder of the information in this class. This requires the use of
 	 * some static fields, which means the constructors.
 	 * 
-	 * @param buf
-	 * @return
+	 * @param buf A string version to be parsed
+	 * @return A VersionParts class indicating the various parsed bits
 	 */
 	private VersionParts preprocess(String buf)
 	{

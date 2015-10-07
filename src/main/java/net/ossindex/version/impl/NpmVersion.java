@@ -45,7 +45,7 @@ public class NpmVersion extends FlexibleSemanticVersion implements IVersion
 	private static final Logger LOG = LoggerFactory.getLogger(NpmVersion.class);
 	/**
 	 * 
-	 * @param buf
+	 * @param buf Version we are trying to parse
 	 */
 	public NpmVersion(String buf)
 	{
@@ -56,8 +56,8 @@ public class NpmVersion extends FlexibleSemanticVersion implements IVersion
 	 * 
 	 *   o A leading "=" or "v" character is stripped off and ignored.
 	 * 
-	 * @param buf
-	 * @return
+	 * @param buf Version we are trying to parse
+	 * @return Simplified version string
 	 */
 	private static String preprocess(String buf)
 	{

@@ -36,34 +36,34 @@ public interface IVersion extends Comparable<IVersion>
 
 	/**
 	 * 
-	 * @return
+	 * @return The major revision, if it exists for this version
 	 */
 	public int getMajor();
 
 	/**
 	 * 
-	 * @return
+	 * @return The minor revision, if it exists for this version
 	 */
 	public int getMinor();
 
 	/**
 	 * 
-	 * @return
+	 * @return The patch number, if it exists for this version
 	 */
 	public int getPatch();
 
 	/** Returns true if this represents a stable release. We take this to mean
 	 * unnamed and no suffix.
 	 * 
-	 * @return
+	 * @return True if this is a stable release
 	 */
 	public boolean isStable();
 
 	/** Returns true if this version satisfies the provided version
 	 * range.
 	 * 
-	 * @param version
-	 * @return
+	 * @param version A version range description to match
+	 * @return True if the version range is satisfied by this version
 	 */
 	boolean satisfies(String range);
 
