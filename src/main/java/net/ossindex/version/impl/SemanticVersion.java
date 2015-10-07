@@ -29,6 +29,7 @@ package net.ossindex.version.impl;
 import net.ossindex.version.IVersion;
 
 import com.github.zafarkhaja.semver.Version;
+import com.github.zafarkhaja.semver.expr.LexerException;
 
 /** Useful docs here: https://github.com/zafarkhaja/jsemver
  * 
@@ -108,7 +109,15 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		// Convert some range variants to what the Version class expects
 		if(range.endsWith(".x")) range = range.substring(0, range.length() - 2);
 		
-		return v.satisfies(range);
+		try
+		{
+			return v.satisfies(range);
+		}
+		catch(LexerException e)
+		{
+			// Ignore this parse error for now.
+		}
+		return false;
 	}
 	
 	/*
