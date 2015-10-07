@@ -62,7 +62,7 @@ public interface IVersion extends Comparable<IVersion>
 	/** Returns true if this version satisfies the provided version
 	 * range.
 	 * 
-	 * @param version A version range description to match
+	 * @param range A version range description to match
 	 * @return True if the version range is satisfied by this version
 	 */
 	boolean satisfies(String range);

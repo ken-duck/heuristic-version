@@ -38,7 +38,7 @@ public class VersionRange
 
 	/** Return true if the provided range intersects our range
 	 * 
-	 * @param yourRange Version range we are trying to intersect with
+	 * @param range Version range we are trying to intersect with
 	 * @return True if these two ranges intersect
 	 */
 	public boolean intersects(VersionRange range)

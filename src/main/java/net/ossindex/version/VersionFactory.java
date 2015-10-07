@@ -69,7 +69,7 @@ public class VersionFactory
 	
 	/** Get a version implementation. Return the best match for the provided string.
 	 * 
-	 * @param version A string version to be parsed
+	 * @param buf A string version to be parsed
 	 * @return A version implementation
 	 */
 	public IVersion getVersion(String buf)
