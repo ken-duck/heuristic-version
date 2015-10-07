@@ -2,13 +2,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ossindex</groupId>
 	<artifactId>heuristic-version</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.4</version>
 
 	<scm>
 		<connection>scm:git:git@github.com:OSSIndex/heuristic-version.git</connection>
 		<url>http://github.com:OSSIndex/heuristic-version</url>
 		<developerConnection>scm:git:git@github.com-OSSIndex:OSSIndex/heuristic-version.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>heuristic-version-0.0.4</tag>
 	</scm>
 
 	<distributionManagement>
