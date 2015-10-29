@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ossindex</groupId>
 	<artifactId>heuristic-version</artifactId>
-	<version>0.0.6</version>
+	<version>0.0.7-SNAPSHOT</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Utility classes that help parse and compare version strings</description>
@@ -28,7 +28,7 @@
 		<connection>scm:git:git@github.com:OSSIndex/heuristic-version.git</connection>
 		<url>http://github.com:OSSIndex/heuristic-version</url>
 		<developerConnection>scm:git:git@github.com-OSSIndex:OSSIndex/heuristic-version.git</developerConnection>
-		<tag>heuristic-version-0.0.6</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>
