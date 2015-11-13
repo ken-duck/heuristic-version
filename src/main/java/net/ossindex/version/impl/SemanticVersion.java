@@ -26,10 +26,14 @@
  */
 package net.ossindex.version.impl;
 
-import net.ossindex.version.IVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.zafarkhaja.semver.Version;
 import com.github.zafarkhaja.semver.expr.LexerException;
+import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
+
+import net.ossindex.version.IVersion;
 
 /** Useful docs here: https://github.com/zafarkhaja/jsemver
  * 
@@ -42,6 +46,7 @@ import com.github.zafarkhaja.semver.expr.LexerException;
  */
 public class SemanticVersion implements Comparable<IVersion>, IVersion
 {
+	private static final Logger LOG = LoggerFactory.getLogger(SemanticVersion.class);
 	private Version v;
 	
 	/** Use an external library for parsing.
@@ -116,9 +121,9 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		{
 			return v.satisfies(range);
 		}
-		catch(LexerException e)
+		catch(LexerException | UnexpectedTokenException e)
 		{
-			// Ignore this parse error for now.
+			LOG.warn("Exception checking range [" + range + "] against version [" + v + "]: " + e.getMessage());
 		}
 		return false;
 	}
