@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2016 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,74 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.version;
+package net.ossindex.version.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import net.ossindex.version.impl.NamedVersion;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.eclipse.aether.version.VersionRange;
+import org.eclipse.aether.version.VersionScheme;
 
-import org.junit.Test;
+import net.ossindex.version.IVersion;
+import net.ossindex.version.VersionFactory;
 
-/** Things that can only match named versions
+/**
  * 
  * @author Ken Duck
  *
  */
-public class NamedVersionTest
+public class AetherVersionRange implements IVersionRange
 {
-	@Test
-	public void simpleName()
+
+	private VersionRange range;
+
+	public AetherVersionRange(String range) throws InvalidVersionSpecificationException
 	{
-		IVersion version = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version instanceof NamedVersion);
+		VersionScheme scheme = new GenericVersionScheme();
+		this.range = scheme.parseVersionRange(range);
 	}
-	
-	@Test
-	public void compareAlike()
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#contains(net.ossindex.version.IVersion)
+	 */
+	@Override
+	public boolean contains(IVersion version)
 	{
-		IVersion version1 = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version1 instanceof NamedVersion);
-		
-		IVersion version2 = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version2 instanceof NamedVersion);
-		
-		assertTrue(version1.equals(version2));
-		assertEquals(0, version1.compareTo(version2));
+		AetherVersion v = VersionFactory.getVersionFactory().adapt(AetherVersion.class, version);
+		return range.containsVersion(v.getVersionImpl());
+	}
+
+	@Override
+	public boolean isAtomic() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IVersion getMinimum() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IVersion getMaximum() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isSimple() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return range.toString();
 	}
 }

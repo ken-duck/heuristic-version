@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2016 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -26,91 +26,111 @@
  */
 package net.ossindex.version.impl;
 
+import com.github.zafarkhaja.semver.ParseException;
+import com.github.zafarkhaja.semver.Parser;
+import com.github.zafarkhaja.semver.expr.Expression;
+import com.github.zafarkhaja.semver.expr.ExpressionParser;
+
 import net.ossindex.version.IVersion;
 
-/** Simple version that is based on name comparisons. This should be used as
- * a last resort.
+/**
  * 
  * @author Ken Duck
  *
  */
-public class NamedVersion implements IVersion
+public class SemanticVersionRange implements IVersionRange
 {
+	private Expression expression;
 	
-	private String name;
+	/**
+	 * Used for both atomic and simple versions
+	 */
+	private SemanticVersion minimum;
+	private SemanticVersion maximum;
 
-	public NamedVersion(String name)
+	/**
+	 * Remember the range for toString
+	 */
+	private String range;
+
+	/**
+	 * 
+	 * @param range
+	 */
+	public SemanticVersionRange(String range)
 	{
-		this.name = name;
+		// First parse the range
+		Parser<Expression> parser = ExpressionParser.newInstance();
+		this.expression = parser.parse(range);
+		
+		this.range = range;
+		
+		try
+		{
+			// Is this an "atomic range" which is another way to say a single version?
+			SemanticVersion version = new FlexibleSemanticVersion(range);
+			this.minimum = version;
+		}
+		catch(ParseException e)
+		{
+			// try something else
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @see net.ossindex.version.IVersionRange#contains(net.ossindex.version.IVersion)
 	 */
 	@Override
-	public int compareTo(IVersion o)
+	public boolean contains(IVersion version)
 	{
-		return name.compareTo(o.toString());
+		// This will match both SemanticVersion and FlexibleSemanticVersion
+		if(version instanceof SemanticVersion)
+		{
+			return expression.interpret(((SemanticVersion)version).getVersionImpl());
+		}
+		throw new IllegalArgumentException("Semantic ranges expect semantic versions");
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
+	 * @see net.ossindex.version.impl.IVersionRange#isAtomic()
 	 */
 	@Override
-	public int hashCode()
+	public boolean isAtomic()
 	{
-		return name.hashCode();
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object o)
-	{
-		if(o instanceof NamedVersion) return name.equals(((NamedVersion)o).name);
-		return false;
+		return minimum != null && maximum == null;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.ossindex.version.IVersion#getMajor()
+	 * @see net.ossindex.version.impl.IVersionRange#isSimple()
 	 */
 	@Override
-	public int getMajor() {
-		throw new UnsupportedOperationException();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.ossindex.version.IVersion#getMinor()
-	 */
-	@Override
-	public int getMinor() {
-		throw new UnsupportedOperationException();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.ossindex.version.IVersion#getPatch()
-	 */
-	@Override
-	public int getPatch() {
-		throw new UnsupportedOperationException();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.ossindex.version.IVersion#isStable()
-	 */
-	@Override
-	public boolean isStable() {
-		return false;
+	public boolean isSimple() {
+		return minimum != null && maximum != null;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#getMinimum()
+	 */
+	@Override
+	public IVersion getMinimum()
+	{
+		return minimum;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#getMaximum()
+	 */
+	@Override
+	public IVersion getMaximum()
+	{
+		return maximum;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -118,6 +138,6 @@ public class NamedVersion implements IVersion
 	@Override
 	public String toString()
 	{
-		return name;
+		return range;
 	}
 }

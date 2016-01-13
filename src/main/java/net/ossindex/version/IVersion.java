@@ -58,13 +58,4 @@ public interface IVersion extends Comparable<IVersion>
 	 * @return True if this is a stable release
 	 */
 	public boolean isStable();
-
-	/** Returns true if this version satisfies the provided version
-	 * range.
-	 * 
-	 * @param range A version range description to match
-	 * @return True if the version range is satisfied by this version
-	 */
-	boolean satisfies(String range);
-
 }

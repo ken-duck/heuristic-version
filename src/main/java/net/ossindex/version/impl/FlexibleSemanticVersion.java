@@ -93,15 +93,21 @@ public class FlexibleSemanticVersion extends SemanticVersion implements Comparab
 			}
 			if(!hasNonZero) sb.append('0');
 		}
+		
 		buf = sb.toString();
+		// If the version does not have 3 parts, give it a trailing .0
+		if(!buf.isEmpty() && tokens.length == 2)
+		{
+			sb.append(".0");
+		}
 
 		if(index < buf.length())
 		{
 			String suffix = buf.substring(index);
 			// Remove hyphens, we'll put them back later
 			while(suffix.startsWith("-")) suffix = suffix.substring(1);
-			buf = buf.substring(0, index) + "-" + suffix;
+			sb.append("-").append(suffix);
 		}
-		return buf;
+		return sb.toString();
 	}
 }

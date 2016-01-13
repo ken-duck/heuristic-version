@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2016 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,25 @@
 package net.ossindex.version;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import net.ossindex.version.impl.NamedVersion;
+import net.ossindex.version.impl.AetherVersion;
 
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.junit.Test;
 
-/** Things that can only match named versions
+/** Test the basic implementation of the AetherVersion class
  * 
  * @author Ken Duck
  *
  */
-public class NamedVersionTest
+public class AetherVersionTest
 {
+
 	@Test
-	public void simpleName()
+	public void simpleApiTest() throws InvalidVersionSpecificationException
 	{
-		IVersion version = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version instanceof NamedVersion);
-	}
-	
-	@Test
-	public void compareAlike()
-	{
-		IVersion version1 = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version1 instanceof NamedVersion);
-		
-		IVersion version2 = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version2 instanceof NamedVersion);
-		
-		assertTrue(version1.equals(version2));
-		assertEquals(0, version1.compareTo(version2));
+		AetherVersion version = new AetherVersion("1.2.3");
+		assertEquals(1, version.getMajor());
+		assertEquals(2, version.getMinor());
+		assertEquals(3, version.getPatch());
 	}
 }

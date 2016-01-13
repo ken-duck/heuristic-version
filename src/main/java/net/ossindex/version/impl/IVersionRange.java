@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2016 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -24,38 +24,45 @@
  *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ossindex.version;
+package net.ossindex.version.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import net.ossindex.version.impl.NamedVersion;
+import net.ossindex.version.IVersion;
 
-import org.junit.Test;
-
-/** Things that can only match named versions
+/** Interface that all range implementations need to implement.
  * 
  * @author Ken Duck
- *
+ * 
  */
-public class NamedVersionTest
+public interface IVersionRange
 {
-	@Test
-	public void simpleName()
-	{
-		IVersion version = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version instanceof NamedVersion);
-	}
-	
-	@Test
-	public void compareAlike()
-	{
-		IVersion version1 = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version1 instanceof NamedVersion);
-		
-		IVersion version2 = VersionFactory.getVersionFactory().getVersion("hello");
-		assertTrue(version2 instanceof NamedVersion);
-		
-		assertTrue(version1.equals(version2));
-		assertEquals(0, version1.compareTo(version2));
-	}
+	/**
+	 * 
+	 * @param version
+	 * @return
+	 */
+	public abstract boolean contains(IVersion version);
+
+	/** Returns true if this range is a simple singular version
+	 * 
+	 * @return
+	 */
+	public abstract boolean isAtomic();
+
+	/** Return the minimum version that satisfies this range
+	 * 
+	 * @return
+	 */
+	public abstract IVersion getMinimum();
+
+	/** Return the maximum version that satisfies this range
+	 * 
+	 * @return
+	 */
+	public abstract IVersion getMaximum();
+
+	/** Return true if this is a simple range which has no gaps
+	 * 
+	 * @return
+	 */
+	public abstract boolean isSimple();
 }

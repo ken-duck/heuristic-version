@@ -1,5 +1,6 @@
 package net.ossindex.version;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -19,4 +20,43 @@ public class VersionRangeTest
 		
 		assertTrue(range1.intersects(range2));
 	}
+	
+	@Test
+	public void testRangeParserGE()
+	{
+		VersionRange range = new VersionRange(">=1.6.1");
+		
+		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.6.2")));
+	}
+	@Test
+	public void testRangeParserGEaLT()
+	{
+		VersionRange range = new VersionRange(">=1.6.1 & <1.7.0");
+		
+		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.6.2")));
+	}
+	@Test
+	public void testInvalidRangeParserGEaLT()
+	{
+		VersionRange range = new VersionRange(">=1.6.1 & <1.7.0");
+		
+		assertFalse(range.contains(VersionFactory.getVersionFactory().getVersion("1.7.0")));
+	}
+	
+	@Test
+	public void aetherRangeTest()
+	{
+		VersionRange range = new VersionRange("(1.6.1,1.7.0]");
+		
+		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.6.2")));
+	}
+
+	@Test
+	public void aetherBadRangeTest()
+	{
+		VersionRange range = new VersionRange("(1.6.1,1.7.0]");
+		
+		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.7.0")));
+	}
+
 }

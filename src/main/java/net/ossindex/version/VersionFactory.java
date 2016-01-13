@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2015-2016 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,9 @@ package net.ossindex.version;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+
+import net.ossindex.version.impl.AetherVersion;
 import net.ossindex.version.impl.FlexibleSemanticVersion;
 import net.ossindex.version.impl.NamedVersion;
 import net.ossindex.version.impl.NpmVersion;
@@ -218,6 +221,26 @@ public class VersionFactory
 
 		version.version = buf;
 		return version;
+	}
+	
+	/** Adapt versions to other version classes when possible
+	 * 
+	 * @param type
+	 * @param version
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T adapt(Class<T> type, IVersion version)
+	{
+		if(type.isAssignableFrom(AetherVersion.class))
+		{
+			try
+			{
+				return (T) new AetherVersion(version.toString());
+			}
+			catch (InvalidVersionSpecificationException e) {} // Ignore parse errors
+		}
+		throw new IllegalArgumentException("Cannot adapt version to " + type.getSimpleName() + " class");
 	}
 
 	/** Simple POJO used to collect useful information during version

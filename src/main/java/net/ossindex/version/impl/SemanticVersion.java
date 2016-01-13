@@ -26,14 +26,12 @@
  */
 package net.ossindex.version.impl;
 
+import net.ossindex.version.IVersion;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.zafarkhaja.semver.Version;
-import com.github.zafarkhaja.semver.expr.LexerException;
-import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
-
-import net.ossindex.version.IVersion;
 
 /** Useful docs here: https://github.com/zafarkhaja/jsemver
  * 
@@ -107,29 +105,6 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.ossindex.version.IVersion#satisfies(java.lang.String)
-	 */
-	@Override
-	public boolean satisfies(String range)
-	{
-		if(v == null) return false;
-		
-		// Convert some range variants to what the Version class expects
-		if(range.endsWith(".x")) range = range.substring(0, range.length() - 2);
-		
-		try
-		{
-			return v.satisfies(range);
-		}
-		catch(LexerException | UnexpectedTokenException e)
-		{
-			LOG.warn("Exception checking range [" + range + "] against version [" + v + "]: " + e.getMessage());
-		}
-		return false;
-	}
-	
-	/*
-	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -201,5 +176,14 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	public boolean isStable()
 	{
 		return true;
+	}
+
+	/** Get the SemVer instance.
+	 * 
+	 * @return
+	 */
+	public Version getVersionImpl()
+	{
+		return v;
 	}
 }

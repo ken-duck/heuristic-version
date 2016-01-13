@@ -1,120 +1,163 @@
-/************************************************************************
- * Copyright (c) 2015 TwoDucks, Inc.
- * All rights reserved.
- ************************************************************************/
+/**
+ *	Copyright (c) 2016 Vör Security Inc.
+ *	All rights reserved.
+ *	
+ *	Redistribution and use in source and binary forms, with or without
+ *	modification, are permitted provided that the following conditions are met:
+ *	    * Redistributions of source code must retain the above copyright
+ *	      notice, this list of conditions and the following disclaimer.
+ *	    * Redistributions in binary form must reproduce the above copyright
+ *	      notice, this list of conditions and the following disclaimer in the
+ *	      documentation and/or other materials provided with the distribution.
+ *	    * Neither the name of the <organization> nor the
+ *	      names of its contributors may be used to endorse or promote products
+ *	      derived from this software without specific prior written permission.
+ *	
+ *	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *	DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ *	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.ossindex.version;
 
-import net.ossindex.version.impl.FlexibleSemanticVersion;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.github.zafarkhaja.semver.Version;
+import net.ossindex.version.impl.AetherVersionRange;
+import net.ossindex.version.impl.IVersionRange;
+import net.ossindex.version.impl.SemanticVersionRange;
 
-/** Represent a range of versions.
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.eclipse.aether.version.VersionScheme;
+
+import com.github.zafarkhaja.semver.expr.LexerException;
+import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
+
+/** Uses a variety of specific implementations of the VersionRange classes to
+ * build a range and compare versions.
  * 
  * @author Ken Duck
  *
  */
 public class VersionRange
 {
-
-	private String[] ranges;
-
+	/**
+	 * Specific range implementations we are using
+	 */
+	private List<IVersionRange> ranges = new LinkedList<IVersionRange>();
+	
+	/**
+	 * 
+	 * @param ranges
+	 */
 	public VersionRange(String[] ranges)
 	{
-		this.ranges = ranges;
+		for (String range : ranges)
+		{
+			this.ranges.add(parse(range));
+		}
 	}
 
 	public VersionRange(String range)
 	{
-		if(range != null)
+		ranges.add(parse(range));
+	}
+	
+	
+	/** Parse the string, trying to figure out the best range implementation
+	 * to use.
+	 * 
+	 * @param range
+	 * @return
+	 */
+	private IVersionRange parse(String range)
+	{
+		// First try semantic ranges
+		try
 		{
-			ranges = new String[1];
-			ranges[0] = range;
+			return new SemanticVersionRange(range);
 		}
-		else
+		catch(UnexpectedTokenException | LexerException e) {} // Ignore the parsing exceptions
+		catch(Exception e)
 		{
-			ranges = new String[0];
+			System.err.println("Exception parsing range: " + e.getClass().getSimpleName());
+			e.printStackTrace();
 		}
+		
+
+		try
+		{
+			return new AetherVersionRange(range);
+		}
+		catch(InvalidVersionSpecificationException e) {} // Ignore the parsing exceptions
+		catch(Exception e)
+		{
+			System.err.println("Exception parsing range: " + e.getClass().getSimpleName());
+			e.printStackTrace();
+		}
+
+//		try
+//		{
+//			return new FlexibleVersionRange(range);
+//		}
+//		catch(Exception e)
+//		{
+//			System.err.println("Exception parsing range: " + e.getClass().getSimpleName());
+//			e.printStackTrace();
+//		}
+		throw new UnsupportedOperationException("Cannot parse range: " + range);
 	}
 
-	/** Return true if the provided range intersects our range
+	/** An imperfect method that tried to determine if one range intersects
+	 * the other range. This is imperfect in that there are complex ranges
+	 * for which this will not work at this time.
 	 * 
-	 * @param range Version range we are trying to intersect with
-	 * @return True if these two ranges intersect
+	 * @param target
+	 * @return
 	 */
-	public boolean intersects(VersionRange range)
+	boolean intersects(VersionRange target)
 	{
-		for(String myRange: ranges)
+		for(IVersionRange myRange: ranges)
 		{
-			if(intersects(myRange, range)) return true;
+			for(IVersionRange yourRange: target.ranges)
+			{
+				// Check simple atomic cases
+				if(myRange.isAtomic() && yourRange.contains(myRange.getMinimum())) return true;
+				if(yourRange.isAtomic() && myRange.contains(yourRange.getMinimum())) return true;
+				
+				// Simple ranges
+				if(myRange.isSimple()
+						&& yourRange.contains(myRange.getMinimum())
+						&& yourRange.contains(myRange.getMaximum())) return true;
+				
+				if(yourRange.isSimple()
+						&& myRange.contains(yourRange.getMinimum())
+						&& myRange.contains(yourRange.getMaximum())) return true;
+				
+				// Both ranges are complex. Panic!
+			}
 		}
 		return false;
 	}
 
-	/** Given two ranges, see if they intersect
+	/**
 	 * 
-	 * @param range1 First range we are trying to intersect
-	 * @param range2 Second range we are trying to intersect
-	 * @return true if these ranges intersect
+	 * @param version
+	 * @return
 	 */
-	private boolean intersects(String range1, VersionRange range2)
+	public boolean contains(IVersion version)
 	{
-		for(String childRange: range2.ranges)
+		for(IVersionRange myRange: ranges)
 		{
-			if(intersects(range1, childRange)) return true;
+			if(myRange.contains(version)) return true;
 		}
-		return false;
-	}
-
-	/** Given two ranges, see if they intersect
-	 * 
-	 * @param range1 First range we are trying to intersect
-	 * @param range2 Second range we are trying to intersect
-	 * @return true if these ranges intersect
-	 */
-	private boolean intersects(String range1, String range2)
-	{
-		// try explicit versions
-		try
-		{
-			Version v1 = Version.valueOf(range1);
-			return v1.satisfies(range2);
-		}
-		catch(Exception e)
-		{
-			// Ignore
-		}
-		
-		try
-		{
-			Version v2 = Version.valueOf(range2);
-			return v2.satisfies(range1);
-		}
-		catch(Exception e)
-		{
-			// Ignore
-		}
-		
-		// Try looser semantic versions
-		try
-		{
-			FlexibleSemanticVersion v1 = new FlexibleSemanticVersion(range1);
-			return v1.satisfies(range2);
-		}
-		catch(Exception e)
-		{
-			// Ignore
-		}
-		
-		try
-		{
-			FlexibleSemanticVersion v2 = new FlexibleSemanticVersion(range2);
-			return v2.satisfies(range1);
-		}
-		catch(Exception e)
-		{
-			// Ignore
-		}
-		
 		return false;
 	}
 
@@ -126,10 +169,11 @@ public class VersionRange
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < ranges.length; i++)
+		boolean first = true;
+		for(IVersionRange myRange: ranges)
 		{
-			if(i > 0) sb.append(",");
-			sb.append(ranges[i]);
+			if(!first) sb.append(",");
+			sb.append(myRange);
 		}
 		return sb.toString();
 	}
