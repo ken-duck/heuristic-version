@@ -54,7 +54,7 @@ public class AetherVersion implements IVersion
 	/**
 	 * We may be able to dig this information out
 	 */
-	int major = -1;
+	int major = -1; // -1 means none have been set
 	int minor = -1;
 	int patch = -1;
 
@@ -112,6 +112,9 @@ public class AetherVersion implements IVersion
 						}
 					}
 				}
+				
+				if(minor < 0) minor = 0;
+				if(patch < 0) patch = 0;
 			}
 			finally
 			{

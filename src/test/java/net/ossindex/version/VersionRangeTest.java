@@ -44,6 +44,15 @@ public class VersionRangeTest
 	}
 	
 	@Test
+	public void getMaximumRangeTest()
+	{
+		VersionRange range = new VersionRange(">=1.6.1 & <1.7.0");
+		range = range.getSimplifiedRange();
+		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.6.2")));
+		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.5.2")));
+	}
+	
+	@Test
 	public void aetherRangeTest()
 	{
 		VersionRange range = new VersionRange("(1.6.1,1.7.0]");
@@ -59,4 +68,5 @@ public class VersionRangeTest
 		assertTrue(range.contains(VersionFactory.getVersionFactory().getVersion("1.7.0")));
 	}
 
+	
 }

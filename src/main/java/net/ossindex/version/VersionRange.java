@@ -33,9 +33,7 @@ import net.ossindex.version.impl.AetherVersionRange;
 import net.ossindex.version.impl.IVersionRange;
 import net.ossindex.version.impl.SemanticVersionRange;
 
-import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.eclipse.aether.version.VersionScheme;
 
 import com.github.zafarkhaja.semver.expr.LexerException;
 import com.github.zafarkhaja.semver.expr.UnexpectedTokenException;
@@ -71,6 +69,15 @@ public class VersionRange
 	}
 	
 	
+	/** Create a simple range class
+	 * 
+	 * @param maxRange
+	 */
+	private VersionRange(IVersionRange range)
+	{
+		ranges.add(range);
+	}
+
 	/** Parse the string, trying to figure out the best range implementation
 	 * to use.
 	 * 
@@ -176,5 +183,48 @@ public class VersionRange
 			sb.append(myRange);
 		}
 		return sb.toString();
+	}
+
+	/** Return a simplified version of the range. For example, if this range is made
+	 * up of multiple components, return the smallest representation. For now this
+	 * is done by stripping of all but the "top" range.
+	 * 
+	 * For example: >=5.0.0 & <6.0.0  becomes  <6.0.0
+	 * 
+	 * In the future this should be improved. It is useful for simple comparisons
+	 * in the auditors.
+	 * 
+	 * FIXME: This is a very naive implementation
+	 * 
+	 * @return
+	 */
+	public VersionRange getSimplifiedRange()
+	{
+		IVersionRange maxRange = null;
+		
+		// Lets make an assumption that all else being equal, the last
+		// range is the largest. Not necessarily true, but usually true.
+		maxRange = ranges.get(ranges.size() - 1);
+		
+		// FIXME: This implementation is not complete
+		
+//		IVersion maxVersion = null;
+//		for (IVersionRange range : ranges)
+//		{
+//			IVersion myVersion = range.getMaximum();
+//			if(myVersion == null) myVersion = range.getMinimum();
+//		}
+		
+		String s = maxRange.toString();
+		int index = s.lastIndexOf('&');
+		int index2 = s.lastIndexOf('|');
+		if(index2 > index) index = index2;
+		if(index > 0)
+		{
+			s = s.substring(index + 1).trim();
+			return new VersionRange(s);
+		}
+		
+		return this;
 	}
 }
