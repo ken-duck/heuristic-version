@@ -103,4 +103,14 @@ public class AndRange extends LogicalRange implements IVersionRange
 	{
 		return "&";
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)
+	 */
+	@Override
+	public boolean intersects(IVersionRange yourRange)
+	{
+		throw new UnsupportedOperationException();
+	}
 }

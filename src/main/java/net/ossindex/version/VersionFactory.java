@@ -127,4 +127,15 @@ public class VersionFactory
 		IVersion version = new NamedVersion(vstring);
 		return new VersionSet(version);
 	}
+
+	/** Join this set of ranges together. This could result in a set, or in a
+	 * logical range.
+	 * 
+	 * @param versions
+	 * @return
+	 */
+	public static IVersionRange getRange(String[] versions)
+	{
+		return null;
+	}
 }

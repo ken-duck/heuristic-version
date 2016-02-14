@@ -131,4 +131,14 @@ public class BoundedVersionRange implements IVersionRange
 		}
 		throw new UnsupportedOperationException("Cannot get string for range");
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)
+	 */
+	@Override
+	public boolean intersects(IVersionRange yourRange)
+	{
+		throw new UnsupportedOperationException();
+	}
 }

@@ -129,4 +129,14 @@ public class VersionSet implements IVersionRange
 	{
 		set.add(version);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)
+	 */
+	@Override
+	public boolean intersects(IVersionRange yourRange)
+	{
+		throw new UnsupportedOperationException();
+	}
 }

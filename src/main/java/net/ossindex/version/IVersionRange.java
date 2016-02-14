@@ -63,4 +63,11 @@ public interface IVersionRange
 	 * @return
 	 */
 	public abstract boolean isSimple();
+
+	/** Check if two ranges intersect
+	 * 
+	 * @param yourRange
+	 * @return
+	 */
+	public abstract boolean intersects(IVersionRange yourRange);
 }
