@@ -111,6 +111,6 @@ public class AndRange extends LogicalRange implements IVersionRange
 	@Override
 	public boolean intersects(IVersionRange yourRange)
 	{
-		throw new UnsupportedOperationException();
+		return range1.intersects(yourRange) && range2.intersects(yourRange);
 	}
 }

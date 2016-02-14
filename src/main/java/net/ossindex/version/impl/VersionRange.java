@@ -165,6 +165,27 @@ public class VersionRange implements IVersionRange
 	@Override
 	public boolean intersects(IVersionRange yourRange)
 	{
-		throw new UnsupportedOperationException();
+		// If the supplied set is a version set, let it deal with it
+		if(yourRange instanceof VersionSet)
+		{
+			return yourRange.intersects(this);
+		}
+		// If the other range is a simple range, then we can just check the extremities
+		// to see if they overlap
+		else if(yourRange instanceof VersionRange)
+		{
+			if(yourRange.contains(version)) return true;
+			if(this.contains(((VersionRange) yourRange).version)) return true;
+		}
+		// Logical ranges need to be broken down
+		else if(yourRange instanceof LogicalRange)
+		{
+			return yourRange.intersects(this);
+		}
+		else
+		{
+			throw new UnsupportedOperationException();
+		}
+		return false;
 	}
 }

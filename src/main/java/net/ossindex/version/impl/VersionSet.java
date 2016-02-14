@@ -39,7 +39,7 @@ import net.ossindex.version.IVersionRange;
  * @author Ken Duck
  *
  */
-public class VersionSet implements IVersionRange
+public class VersionSet implements IVersionRange, Iterable<IVersion>
 {
 	/**
 	 * Used for both atomic and simple versions
@@ -137,6 +137,21 @@ public class VersionSet implements IVersionRange
 	@Override
 	public boolean intersects(IVersionRange yourRange)
 	{
-		throw new UnsupportedOperationException();
+		// The set has explicit versions, so just check these against the supplied range
+		for(IVersion version: set)
+		{
+			if(yourRange.contains(version)) return true;
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Iterable#iterator()
+	 */
+	@Override
+	public Iterator<IVersion> iterator()
+	{
+		return set.iterator();
 	}
 }
