@@ -26,63 +26,92 @@
  */
 package net.ossindex.version.impl;
 
-import org.eclipse.aether.util.version.GenericVersionScheme;
-import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.eclipse.aether.version.VersionRange;
-import org.eclipse.aether.version.VersionScheme;
+import com.github.zafarkhaja.semver.expr.Expression;
 
 import net.ossindex.version.IVersion;
-import net.ossindex.version.VersionFactory;
+import net.ossindex.version.IVersionRange;
 
-/**
+/** A bounded version range is capped at both ends, for example 1.2.5 - 1.2.8
  * 
  * @author Ken Duck
  *
  */
-public class AetherVersionRange implements IVersionRange
+public class BoundedVersionRange implements IVersionRange
 {
+	private Expression expression;
+	
+	/**
+	 * Used for both atomic and simple versions
+	 */
+	private SemanticVersion minimum;
+	private SemanticVersion maximum;
 
-	private VersionRange range;
+	/**
+	 * Remember the range for toString
+	 */
+	private String range;
 
-	public AetherVersionRange(String range) throws InvalidVersionSpecificationException
+	/** A "range" of a single version
+	 * 
+	 * @param version
+	 */
+	public BoundedVersionRange(SemanticVersion version)
 	{
-		VersionScheme scheme = new GenericVersionScheme();
-		this.range = scheme.parseVersionRange(range);
+		this.minimum = version;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see net.ossindex.version.impl.IVersionRange#contains(net.ossindex.version.IVersion)
+	 * @see net.ossindex.version.IVersionRange#contains(net.ossindex.version.IVersion)
 	 */
 	@Override
 	public boolean contains(IVersion version)
 	{
-		AetherVersion v = VersionFactory.getVersionFactory().adapt(AetherVersion.class, version);
-		return range.containsVersion(v.getVersionImpl());
+		// This will match both SemanticVersion and FlexibleSemanticVersion
+		if(version instanceof SemanticVersion)
+		{
+			return expression.interpret(((SemanticVersion)version).getVersionImpl());
+		}
+		throw new IllegalArgumentException("Semantic ranges expect semantic versions");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#isAtomic()
+	 */
 	@Override
-	public boolean isAtomic() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isAtomic()
+	{
+		return minimum != null && maximum == null;
 	}
 
-	@Override
-	public IVersion getMinimum() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IVersion getMaximum() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#isSimple()
+	 */
 	@Override
 	public boolean isSimple() {
-		// TODO Auto-generated method stub
-		return false;
+		return minimum != null && maximum != null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#getMinimum()
+	 */
+	@Override
+	public IVersion getMinimum()
+	{
+		return minimum;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.IVersionRange#getMaximum()
+	 */
+	@Override
+	public IVersion getMaximum()
+	{
+		return maximum;
 	}
 
 	/*
@@ -92,6 +121,14 @@ public class AetherVersionRange implements IVersionRange
 	@Override
 	public String toString()
 	{
-		return range.toString();
+		if(range != null) return range;
+		if(minimum != null)
+		{
+			if(maximum == null)
+			{
+				 return minimum.toString();
+			}
+		}
+		throw new UnsupportedOperationException("Cannot get string for range");
 	}
 }

@@ -26,55 +26,33 @@
  */
 package net.ossindex.version.impl;
 
-import com.github.zafarkhaja.semver.ParseException;
-import com.github.zafarkhaja.semver.Parser;
-import com.github.zafarkhaja.semver.expr.Expression;
-import com.github.zafarkhaja.semver.expr.ExpressionParser;
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.ossindex.version.IVersion;
+import net.ossindex.version.IVersionRange;
 
-/**
+/** An version set is a range where all the contained values are
+ * explicit ranges. 
  * 
  * @author Ken Duck
  *
  */
-public class SemanticVersionRange implements IVersionRange
+public class VersionSet implements IVersionRange
 {
-	private Expression expression;
-	
 	/**
 	 * Used for both atomic and simple versions
 	 */
-	private SemanticVersion minimum;
-	private SemanticVersion maximum;
-
-	/**
-	 * Remember the range for toString
-	 */
-	private String range;
+	private SortedSet<IVersion> set = new TreeSet<IVersion>();
 
 	/**
 	 * 
 	 * @param range
 	 */
-	public SemanticVersionRange(String range)
+	public VersionSet(IVersion version)
 	{
-		// First parse the range
-		Parser<Expression> parser = ExpressionParser.newInstance();
-		this.expression = parser.parse(range);
-		
-		this.range = range;
-		
-		try
-		{
-			// Is this an "atomic range" which is another way to say a single version?
-			SemanticVersion version = new FlexibleSemanticVersion(range);
-			this.minimum = version;
-		}
-		catch(ParseException e)
-		{
-			// try something else
-		}
+		set.add(version);
 	}
 
 	/*
@@ -84,12 +62,7 @@ public class SemanticVersionRange implements IVersionRange
 	@Override
 	public boolean contains(IVersion version)
 	{
-		// This will match both SemanticVersion and FlexibleSemanticVersion
-		if(version instanceof SemanticVersion)
-		{
-			return expression.interpret(((SemanticVersion)version).getVersionImpl());
-		}
-		throw new IllegalArgumentException("Semantic ranges expect semantic versions");
+		return set.contains(version);
 	}
 
 	/*
@@ -99,7 +72,7 @@ public class SemanticVersionRange implements IVersionRange
 	@Override
 	public boolean isAtomic()
 	{
-		return minimum != null && maximum == null;
+		return true;
 	}
 
 	/*
@@ -108,7 +81,7 @@ public class SemanticVersionRange implements IVersionRange
 	 */
 	@Override
 	public boolean isSimple() {
-		return minimum != null && maximum != null;
+		return true;
 	}
 	
 	/*
@@ -118,7 +91,7 @@ public class SemanticVersionRange implements IVersionRange
 	@Override
 	public IVersion getMinimum()
 	{
-		return minimum;
+		return set.first();
 	}
 
 	/*
@@ -128,7 +101,7 @@ public class SemanticVersionRange implements IVersionRange
 	@Override
 	public IVersion getMaximum()
 	{
-		return maximum;
+		return set.last();
 	}
 
 	/*
@@ -138,6 +111,22 @@ public class SemanticVersionRange implements IVersionRange
 	@Override
 	public String toString()
 	{
-		return range;
+		StringBuffer sb = new StringBuffer();
+		for(Iterator<IVersion> it = set.iterator(); it.hasNext();)
+		{
+			IVersion version = it.next();
+			sb.append(version);
+			if(it.hasNext()) sb.append(",");
+		}
+		return sb.toString();
+	}
+
+	/** Add another version to the set
+	 * 
+	 * @param version
+	 */
+	public void add(IVersion version)
+	{
+		set.add(version);
 	}
 }

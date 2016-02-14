@@ -56,11 +56,27 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		setVersion(buf);
 	}
 	
+	public SemanticVersion(int major)
+	{
+		v = Version.forIntegers(major);
+	}
+	
+	public SemanticVersion(int major, int minor)
+	{
+		v = Version.forIntegers(major, minor);
+	}
+	
+	public SemanticVersion(int major, int minor, int patch)
+	{
+		v = Version.forIntegers(major, minor, patch);
+	}
+	
 	// Used by subclasses only
 	protected SemanticVersion()
 	{
 	}
 	
+
 	/** Set the version
 	 * 
 	 * @param buf Version we are trying to parse

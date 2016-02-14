@@ -26,26 +26,41 @@
  */
 package net.ossindex.version;
 
-import static org.junit.Assert.assertEquals;
-import net.ossindex.version.impl.AetherVersion;
-
-import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.junit.Test;
-
-/** Test the basic implementation of the AetherVersion class
+/** Interface that all range implementations need to implement.
  * 
  * @author Ken Duck
- *
+ * 
  */
-public class AetherVersionTest
+public interface IVersionRange
 {
+	/**
+	 * 
+	 * @param version
+	 * @return
+	 */
+	public abstract boolean contains(IVersion version);
 
-	@Test
-	public void simpleApiTest() throws InvalidVersionSpecificationException
-	{
-		AetherVersion version = new AetherVersion("1.2.3");
-		assertEquals(1, version.getMajor());
-		assertEquals(2, version.getMinor());
-		assertEquals(3, version.getPatch());
-	}
+	/** Returns true if this range is a simple singular version
+	 * 
+	 * @return
+	 */
+	public abstract boolean isAtomic();
+
+	/** Return the minimum version that satisfies this range
+	 * 
+	 * @return
+	 */
+	public abstract IVersion getMinimum();
+
+	/** Return the maximum version that satisfies this range
+	 * 
+	 * @return
+	 */
+	public abstract IVersion getMaximum();
+
+	/** Return true if this is a simple range which has no gaps
+	 * 
+	 * @return
+	 */
+	public abstract boolean isSimple();
 }
