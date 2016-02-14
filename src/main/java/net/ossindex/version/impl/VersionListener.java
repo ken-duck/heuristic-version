@@ -193,8 +193,15 @@ public class VersionListener extends VersionBaseListener
 	@Override
 	public void exitLogical_range(VersionParser.Logical_rangeContext ctx)
 	{
-		// If there are not three tokens then ignore
-		if(ctx.getChildCount() == 3)
+		// Two tokens is automatically an 'and'
+		if(ctx.getChildCount() == 2)
+		{
+			Object o1 = stack.pop();
+			Object o2 = stack.pop();
+			stack.push(new AndRange((IVersionRange)o2, (IVersionRange)o1));
+		}
+		// Three tokens may be and OR or OR a bracketed version
+		else if(ctx.getChildCount() == 3)
 		{
 			String first = ctx.getChild(0).getText();
 			if("(".equals(first))
@@ -219,6 +226,13 @@ public class VersionListener extends VersionBaseListener
 				}
 			}
 		}
+		// Everything else is a fall through
+	}
+
+	@Override
+	public void enterIdentifier(VersionParser.IdentifierContext ctx)
+	{
+		System.err.println("WUT: '" + ctx.getText() + "'");
 	}
 
 }

@@ -74,6 +74,18 @@ public class RangeTests
 		assertEquals(">1.2.5 & <1.3.0", range.toString());
 		assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
 	}
+	
+	/** Using a space instead of the and
+	 * 
+	 */
+	@Test
+	public void testSpaceAndVersion()
+	{
+		IVersionRange range = VersionFactory.getRange(">1.2.5 <1.3");
+		assertNotNull(range);
+		assertEquals(">1.2.5 & <1.3.0", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
+	}
 
 	@Test
 	public void testOrVersion()

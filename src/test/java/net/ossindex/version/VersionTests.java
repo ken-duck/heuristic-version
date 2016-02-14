@@ -165,6 +165,14 @@ public class VersionTests
 		assertEquals("named", range.toString());
 	}
 	
+	@Test
+	public void testInvalidVersion() throws IOException
+	{
+		IVersionRange range = parseVersion("1.2.3 &");
+		assertNotNull(range);
+		assertEquals("1.2.3", range.toString());
+	}
+	
 	/** Common test code
 	 * 
 	 * @param vstring

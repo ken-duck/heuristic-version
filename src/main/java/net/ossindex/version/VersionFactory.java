@@ -120,7 +120,7 @@ public class VersionFactory
 			IVersionRange range = listener.getRange();
 			return range;
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
