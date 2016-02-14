@@ -26,34 +26,26 @@
  */
 package net.ossindex.version.impl;
 
-import com.github.zafarkhaja.semver.Version;
-
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
 
-/** A bounded version range is capped at both ends, for example 1.2.5 - 1.2.8
+/** Two ranges anded together
  * 
  * @author Ken Duck
  *
  */
-public class VersionRange implements IVersionRange
+public class OrRange extends LogicalRange implements IVersionRange
 {
-	/**
-	 * 
-	 */
-	private String operator;
-
-	private SemanticVersion version;
 
 	/**
 	 * 
 	 * @param operator
 	 * @param version
 	 */
-	public VersionRange(String operator, SemanticVersion version)
+	public OrRange(IVersionRange range1, IVersionRange range2)
 	{
-		this.version = version;
-		this.operator = operator;
+		this.range1 = range1;
+		this.range2 = range2;
 	}
 
 	/*
@@ -63,27 +55,7 @@ public class VersionRange implements IVersionRange
 	@Override
 	public boolean contains(IVersion version)
 	{
-		if(version instanceof SemanticVersion)
-		{
-			Version myVer = this.version.getVersionImpl();
-			Version yourVer = ((SemanticVersion)version).getVersionImpl();
-			switch(operator)
-			{
-			case ">":
-				return myVer.lessThan(yourVer);
-			case ">=":
-				return myVer.lessThanOrEqualTo(yourVer);
-			case "<":
-				return myVer.greaterThan(yourVer);
-			case "<=":
-				return myVer.greaterThanOrEqualTo(yourVer);
-			default:
-				throw new IllegalArgumentException("Invalid operator: " + operator);
-			}
-		}
-
-		// If we get here, the versions cannot be compared
-		return false;
+		return range1.contains(version) || range2.contains(version);
 	}
 
 	/*
@@ -93,7 +65,7 @@ public class VersionRange implements IVersionRange
 	@Override
 	public boolean isAtomic()
 	{
-		return true;
+		return false;
 	}
 
 	/*
@@ -103,7 +75,7 @@ public class VersionRange implements IVersionRange
 	@Override
 	public boolean isSimple()
 	{
-		return true;
+		return false;
 	}
 
 	/*
@@ -113,19 +85,7 @@ public class VersionRange implements IVersionRange
 	@Override
 	public IVersion getMinimum()
 	{
-		switch(operator)
-		{
-		case "<":
-		case "<=":
-			return new SemanticVersion(0);
-		case ">":
-			// FIXME: Not quite correct. We need to increment the version.
-			return version;
-		case ">=":
-			return version;
-		default:
-			throw new IllegalArgumentException("Invalid operator: " + operator);
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	/*
@@ -135,26 +95,11 @@ public class VersionRange implements IVersionRange
 	@Override
 	public IVersion getMaximum()
 	{
-		switch(operator)
-		{
-		case "<":
-		case "<=":
-			return version;
-		case ">":
-		case ">=":
-			return null;
-		default:
-			throw new IllegalArgumentException("Invalid operator: " + operator);
-		}
+		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString()
+	public String getOperator()
 	{
-		return operator + version;
+		return "|";
 	}
 }

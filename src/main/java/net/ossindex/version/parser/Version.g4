@@ -4,10 +4,32 @@ grammar Version;
 }
 
 range
-	: version_set
+	: version_set EOF
+	| range_type EOF
+	;
+
+range_type
+	: logical_range
 	| simple_range
 	;
 
+/** Ranges connected by logical operators
+ */
+logical_range
+	: '(' logical_range ')'
+	| '(' simple_range ')'
+	| simple_range '&' simple_range
+	| simple_range '|' simple_range
+	
+	| logical_range '&' simple_range
+	| simple_range '|' logical_range
+	
+	| logical_range '&' logical_range
+	| logical_range '|' logical_range
+	;
+
+/** A set of versions
+ */
 version_set
 	: version
 	| version_set ',' version
@@ -87,4 +109,7 @@ ANY
 	| ')'
 	| NUMBER
 	;
-	
+
+WS
+	: (' ' | '\t' | '\\n') -> channel(HIDDEN)
+	;

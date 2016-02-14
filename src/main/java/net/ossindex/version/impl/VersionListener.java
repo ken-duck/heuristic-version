@@ -44,7 +44,7 @@ import net.ossindex.version.parser.VersionParser;
 public class VersionListener extends VersionBaseListener
 {
 	private Stack<Object> stack = new Stack<Object>();
-	
+
 	private IVersionRange range;
 
 	public IVersionRange getRange()
@@ -56,7 +56,7 @@ public class VersionListener extends VersionBaseListener
 	public void exitNumeric_version(VersionParser.Numeric_versionContext ctx)
 	{
 		SemanticVersion version = null;
-		
+
 		int count = ctx.getChildCount();
 		switch(count)
 		{
@@ -93,7 +93,7 @@ public class VersionListener extends VersionBaseListener
 	public void exitPostfix_version(VersionParser.Postfix_versionContext ctx)
 	{
 		SemanticVersion version = null;
-		
+
 		int count = ctx.getChildCount();
 		switch(count)
 		{
@@ -105,10 +105,10 @@ public class VersionListener extends VersionBaseListener
 			break;
 		case 6:
 			version = new SemanticVersion(
-					  ctx.getChild(0).getText() + "."
-					+ ctx.getChild(2).getText() + "."
-					+ ctx.getChild(4).getText() + "-"
-					+ ctx.getChild(5).getText());
+					ctx.getChild(0).getText() + "."
+							+ ctx.getChild(2).getText() + "."
+							+ ctx.getChild(4).getText() + "-"
+							+ ctx.getChild(5).getText());
 			break;
 		case 7:
 			version = new SemanticVersion(ctx.getText());
@@ -116,7 +116,7 @@ public class VersionListener extends VersionBaseListener
 		}
 		stack.push(version);
 	}
-	
+
 	/**
 	 * Get a named version.
 	 */
@@ -126,7 +126,7 @@ public class VersionListener extends VersionBaseListener
 		IVersion version = new NamedVersion(ctx.getText());
 		stack.push(version);
 	}
-	
+
 	/** Get whatever is on the stack and make a version range out of it
 	 * 
 	 * @see net.ossindex.version.parser.VersionBaseListener#exitRange(net.ossindex.version.parser.VersionParser.RangeContext)
@@ -187,6 +187,37 @@ public class VersionListener extends VersionBaseListener
 		{
 			VersionSet set = (VersionSet)stack.peek();
 			set.add((IVersion)o1);
+		}
+	}
+
+	@Override
+	public void exitLogical_range(VersionParser.Logical_rangeContext ctx)
+	{
+		// If there are not three tokens then ignore
+		if(ctx.getChildCount() == 3)
+		{
+			String first = ctx.getChild(0).getText();
+			if("(".equals(first))
+			{
+				// bracketed token, do nothing
+			}
+			else
+			{
+				Object o1 = stack.pop();
+				Object o2 = stack.pop();
+
+				String operator = ctx.getChild(1).getText();
+
+				switch(operator)
+				{
+				case "&":
+					stack.push(new AndRange((IVersionRange)o2, (IVersionRange)o1));
+					break;
+				case "|":
+					stack.push(new OrRange((IVersionRange)o2, (IVersionRange)o1));
+					break;
+				}
+			}
 		}
 	}
 
