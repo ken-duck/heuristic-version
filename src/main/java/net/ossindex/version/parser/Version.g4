@@ -47,8 +47,8 @@ range
  * situations as best we can to get SOMETHING from the chaos.
  */
 broken_range
-	: simple_range '&'
-	| version '&'
+	: simple_range .*
+	| version .*
 	;
 
 range_type
