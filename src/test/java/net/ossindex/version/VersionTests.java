@@ -173,6 +173,14 @@ public class VersionTests
 		assertEquals("1.2.3", range.toString());
 	}
 	
+	@Test
+	public void testMajorMinorBuildRevisionVersion() throws IOException
+	{
+		IVersionRange range = parseVersion("1.0.2-v20150114");
+		assertNotNull(range);
+		assertEquals("1.0.2-v20150114", range.toString());
+	}
+
 	/** Common test code
 	 * 
 	 * @param vstring

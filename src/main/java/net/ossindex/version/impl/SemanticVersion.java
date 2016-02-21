@@ -26,12 +26,12 @@
  */
 package net.ossindex.version.impl;
 
-import net.ossindex.version.IVersion;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.zafarkhaja.semver.Version;
+
+import net.ossindex.version.IVersion;
 
 /** Useful docs here: https://github.com/zafarkhaja/jsemver
  * 
@@ -170,7 +170,8 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		}
 		else
 		{
-			throw new UnsupportedOperationException();
+			// Fall back to simple string comparison
+			return toString().compareTo(other.toString());
 		}
 	}
 

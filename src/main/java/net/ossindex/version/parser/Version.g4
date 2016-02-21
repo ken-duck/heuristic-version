@@ -112,6 +112,7 @@ prefixed_version
  */
 postfix_version
 	: NUMBER '.' NUMBER '.' NUMBER identifier
+	| NUMBER '.' NUMBER '.' NUMBER '.' identifier
 	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
 	;
 
@@ -133,7 +134,7 @@ named_version
  * We need special handling of the first character
  */
 identifier
-	: ~(NUMBER | '-' | '&' | '|') any*?
+	: ~(NUMBER | '.' | '-' | '&' | '|') any*?
 	;
 
 /** "any" exclusive of comparison operators and such

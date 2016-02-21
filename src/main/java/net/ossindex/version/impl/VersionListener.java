@@ -104,6 +104,7 @@ public class VersionListener extends VersionBaseListener
 			version = new SemanticVersion(major, minor, patch);
 			break;
 		case 6:
+			//1.2.3alpha
 			version = new SemanticVersion(
 					ctx.getChild(0).getText() + "."
 							+ ctx.getChild(2).getText() + "."
@@ -111,7 +112,13 @@ public class VersionListener extends VersionBaseListener
 							+ ctx.getChild(5).getText());
 			break;
 		case 7:
-			version = new SemanticVersion(ctx.getText());
+			//1.2.3-alpha
+			//1.2.3.alpha
+			version = new SemanticVersion(
+					ctx.getChild(0).getText() + "."
+							+ ctx.getChild(2).getText() + "."
+							+ ctx.getChild(4).getText() + "-"
+							+ ctx.getChild(6).getText());
 			break;
 		}
 		stack.push(version);
