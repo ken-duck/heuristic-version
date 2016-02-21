@@ -228,11 +228,4 @@ public class VersionListener extends VersionBaseListener
 		}
 		// Everything else is a fall through
 	}
-
-	@Override
-	public void enterIdentifier(VersionParser.IdentifierContext ctx)
-	{
-		System.err.println("WUT: '" + ctx.getText() + "'");
-	}
-
 }
