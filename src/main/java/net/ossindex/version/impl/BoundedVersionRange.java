@@ -43,8 +43,8 @@ public class BoundedVersionRange implements IVersionRange
 	/**
 	 * Used for both atomic and simple versions
 	 */
-	private SemanticVersion minimum;
-	private SemanticVersion maximum;
+	private IVersion minimum;
+	private IVersion maximum;
 
 	/**
 	 * Remember the range for toString
@@ -58,6 +58,17 @@ public class BoundedVersionRange implements IVersionRange
 	public BoundedVersionRange(SemanticVersion version)
 	{
 		this.minimum = version;
+	}
+
+	/** Inclusive range
+	 * 
+	 * @param min
+	 * @param max
+	 */
+	public BoundedVersionRange(IVersion min, IVersion max) {
+		this.minimum = min;
+		this.maximum = max;
+		this.range = ">=" + min + " <=" + max;
 	}
 
 	/*
@@ -140,5 +151,14 @@ public class BoundedVersionRange implements IVersionRange
 	public boolean intersects(IVersionRange yourRange)
 	{
 		throw new UnsupportedOperationException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersionRange#getSimplifiedRange()
+	 */
+	@Override
+	public IVersionRange getSimplifiedRange() {
+		return this;
 	}
 }

@@ -113,4 +113,13 @@ public class AndRange extends LogicalRange implements IVersionRange
 	{
 		return range1.intersects(yourRange) && range2.intersects(yourRange);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersionRange#getSimplifiedRange()
+	 */
+	@Override
+	public IVersionRange getSimplifiedRange() {
+		return this;
+	}
 }

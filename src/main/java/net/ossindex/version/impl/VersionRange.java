@@ -188,4 +188,13 @@ public class VersionRange implements IVersionRange
 		}
 		return false;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersionRange#getSimplifiedRange()
+	 */
+	@Override
+	public IVersionRange getSimplifiedRange() {
+		return this;
+	}
 }

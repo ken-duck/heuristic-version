@@ -70,4 +70,10 @@ public interface IVersionRange
 	 * @return
 	 */
 	public abstract boolean intersects(IVersionRange yourRange);
+
+	/**
+	 * Get a simplified version range, suitable for users to read quickly
+	 * @return
+	 */
+	public abstract IVersionRange getSimplifiedRange();
 }

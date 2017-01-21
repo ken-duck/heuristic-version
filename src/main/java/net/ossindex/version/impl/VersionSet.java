@@ -154,4 +154,38 @@ public class VersionSet implements IVersionRange, Iterable<IVersion>
 	{
 		return set.iterator();
 	}
+
+	/** Get the max range, the min range, and then return a range based on those
+	 * values. *UNLESS* there are only a limited number of ranges here, in which case
+	 * return them all.
+	 * 
+	 * @see net.ossindex.version.IVersionRange#getSimplifiedRange()
+	 */
+	@Override
+	public IVersionRange getSimplifiedRange() {
+		if (set.size() < 5) {
+			return this;
+		}
+		IVersion max = null;
+		IVersion min = null;
+		
+		for (IVersion v : set) {
+			if (max == null) {
+				max = v;
+			} else {
+				if (v.compareTo(max) > 0) {
+					max = v;
+				}
+			}
+			if (min == null) {
+				min = v;
+			} else {
+				if (v.compareTo(min) < 0) {
+					min = v;
+				}
+			}
+		}
+		
+		return new BoundedVersionRange(min, max);
+	}
 }
