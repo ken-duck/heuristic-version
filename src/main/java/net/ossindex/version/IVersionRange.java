@@ -44,7 +44,7 @@ public interface IVersionRange
 	 * 
 	 * @return
 	 */
-	public abstract boolean isAtomic();
+	public abstract boolean isDiscrete();
 
 	/** Return the minimum version that satisfies this range
 	 * 

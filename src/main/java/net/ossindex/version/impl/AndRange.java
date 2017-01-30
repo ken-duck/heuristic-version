@@ -63,7 +63,7 @@ public class AndRange extends LogicalRange implements IVersionRange
 	 * @see net.ossindex.version.impl.IVersionRange#isAtomic()
 	 */
 	@Override
-	public boolean isAtomic()
+	public boolean isDiscrete()
 	{
 		return false;
 	}

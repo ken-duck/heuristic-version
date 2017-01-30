@@ -91,9 +91,12 @@ public class VersionRange implements IVersionRange
 	 * @see net.ossindex.version.impl.IVersionRange#isAtomic()
 	 */
 	@Override
-	public boolean isAtomic()
+	public boolean isDiscrete()
 	{
-		return true;
+		if (operator == null) {
+			return true;
+		}
+		return false;
 	}
 
 	/*

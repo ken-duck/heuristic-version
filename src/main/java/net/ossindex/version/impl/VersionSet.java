@@ -70,7 +70,7 @@ public class VersionSet implements IVersionRange, Iterable<IVersion>
 	 * @see net.ossindex.version.impl.IVersionRange#isAtomic()
 	 */
 	@Override
-	public boolean isAtomic()
+	public boolean isDiscrete()
 	{
 		return true;
 	}
