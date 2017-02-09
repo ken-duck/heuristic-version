@@ -227,12 +227,22 @@ public class VersionListener extends VersionBaseListener
 				case "&":
 					stack.push(new AndRange((IVersionRange)o2, (IVersionRange)o1));
 					break;
-				case "|":
-					stack.push(new OrRange((IVersionRange)o2, (IVersionRange)o1));
-					break;
 				}
 			}
 		}
 		// Everything else is a fall through
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.parser.VersionBaseListener#exitUnion_range(net.ossindex.version.parser.VersionParser.Union_rangeContext)
+	 */
+	@Override
+	public void exitUnion_range(VersionParser.Union_rangeContext ctx)
+	{
+		Object o1 = stack.pop();
+		Object o2 = stack.pop();
+
+		stack.push(new OrRange((IVersionRange)o2, (IVersionRange)o1));
 	}
 }

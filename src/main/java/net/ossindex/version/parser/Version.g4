@@ -39,6 +39,7 @@ grammar Version;
 
 range
 	: version_set EOF
+	| union_range EOF
 	| range_type EOF
 	| broken_range EOF
 	;
@@ -56,6 +57,11 @@ range_type
 	| simple_range
 	;
 
+union_range
+	: range_type OR union_range
+	| range_type OR range_type
+	;
+
 /** Ranges connected by logical operators
  */
 logical_range
@@ -67,13 +73,10 @@ logical_range
 	| logical_range {whitespace();} logical_range
 	
 	| simple_range '&' simple_range
-	| simple_range '|' simple_range
 	
 	| logical_range '&' simple_range
-	| simple_range '|' logical_range
 	
 	| logical_range '&' logical_range
-	| logical_range '|' logical_range
 	;
 
 /** A set of versions
@@ -134,7 +137,7 @@ named_version
  * We need special handling of the first character
  */
 identifier
-	: ~(NUMBER | '.' | '-' | '&' | '|') any*?
+	: ~(NUMBER | '.' | '-' | '&' | OR) any*?
 	;
 
 /** "any" exclusive of comparison operators and such
@@ -144,6 +147,13 @@ any
 	| '-'
 	| '.'
 	| NUMBER
+	;
+
+/** This is a bit of a kludge, since it will also match ||| and |||| which are
+ * quite silly.
+ */
+OR
+	: '|'+
 	;
 
 NUMBER
