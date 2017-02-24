@@ -119,12 +119,13 @@ postfix_version
 	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
 	;
 
-/** Simple numeric matching
+/** Simple numeric matching. Strip training dots if they exist.
  */
 numeric_version
-	: NUMBER '.' NUMBER '.' NUMBER
-	| NUMBER '.' NUMBER
-	| NUMBER
+	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.'?
+	| NUMBER '.' NUMBER '.' NUMBER '.'?
+	| NUMBER '.' NUMBER '.'?
+	| NUMBER '.'?
 	;
 
 /** A fall back for when all else fails

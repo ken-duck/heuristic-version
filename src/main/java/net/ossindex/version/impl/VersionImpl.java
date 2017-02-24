@@ -13,6 +13,7 @@ public class VersionImpl implements IVersion
 	private int major;
 	private int minor;
 	private int patch;
+	private int build;
 	private String suffix;
 	
 	public VersionImpl(int major)
@@ -30,12 +31,37 @@ public class VersionImpl implements IVersion
 		this.minor = minor;
 		this.patch = patch;
 	}
+	public VersionImpl(int major, int minor, int patch, int build)
+	{
+		this.major = major;
+		this.minor = minor;
+		this.patch = patch;
+	}
 	public VersionImpl(int major, int minor, int patch, String suffix)
 	{
 		this.major = major;
 		this.minor = minor;
 		this.patch = patch;
+		this.build = build;
 		this.suffix = suffix;
+	}
+	
+	public VersionImpl(int major, int minor, int patch, int build, String suffix)
+	{
+		this.major = major;
+		this.minor = minor;
+		this.patch = patch;
+		this.build = build;
+		this.suffix = suffix;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#getBuild()
+	 */
+	@Override
+	public int getBuild() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

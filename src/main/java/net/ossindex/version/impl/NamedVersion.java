@@ -104,6 +104,15 @@ public class NamedVersion implements IVersion
 
 	/*
 	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#getBuild()
+	 */
+	@Override
+	public int getBuild() {
+		throw new UnsupportedOperationException();
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see net.ossindex.version.IVersion#isStable()
 	 */
 	@Override

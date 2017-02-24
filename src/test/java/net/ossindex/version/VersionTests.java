@@ -39,6 +39,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import net.ossindex.version.impl.VersionListener;
@@ -134,6 +135,14 @@ public class VersionTests
 	}
 	
 	@Test
+	public void testMajorMinorPatchBuild() throws IOException
+	{
+		IVersionRange range = parseVersion("1.2.3.4");
+		assertNotNull(range);
+		assertEquals("1.2.3.4", range.toString());
+	}
+	
+	@Test
 	public void testSimplePrefix() throws IOException
 	{
 		IVersionRange range = parseVersion("demo-1.2.3");
@@ -149,12 +158,71 @@ public class VersionTests
 		assertEquals("1.2.3", range.toString());
 	}
 	
+	/**
+	 * Both this and the above cannot be true.
+	 */
 	@Test
 	public void testPrefixPostfix() throws IOException
 	{
 		IVersionRange range = parseVersion("5demo-1.2.3alpha");
 		assertNotNull(range);
 		assertEquals("1.2.3-alpha", range.toString());
+	}
+	
+	/**
+	 * Both this and the above cannot be true.
+	 */
+	@Test
+	public void testEndsWithDot1() throws IOException
+	{
+		IVersionRange range = parseVersion("5.");
+		assertNotNull(range);
+		assertEquals("5.0.0", range.toString());
+	}
+	
+	/**
+	 * Both this and the above cannot be true.
+	 */
+	@Test
+	public void testEndsWithDot2() throws IOException
+	{
+		IVersionRange range = parseVersion("5.5.");
+		assertNotNull(range);
+		assertEquals("5.5.0", range.toString());
+	}
+	
+	/**
+	 * Both this and the above cannot be true.
+	 */
+	@Test
+	public void testEndsWithDot3() throws IOException
+	{
+		IVersionRange range = parseVersion("5.5.5.");
+		assertNotNull(range);
+		assertEquals("5.5.5", range.toString());
+	}
+	
+	/**
+	 * Both this and the below cannot be true.
+	 */
+	@Test
+	public void testEndsWithDot4() throws IOException
+	{
+		IVersionRange range = parseVersion("5.5.5.5.");
+		assertNotNull(range);
+		assertEquals("5.5.5.5", range.toString());
+	}
+	
+	/**
+	 * Both this and the above cannot be true.
+	 */
+	@Test
+	@Ignore
+	public void testPrefixPostfix2() throws IOException
+	{
+		IVersionRange range = parseVersion("2.2.3alpha1.1");
+		assertNotNull(range);
+		assertEquals("2.2.3alpha1.1", range.toString());
 	}
 	
 	@Test
@@ -179,7 +247,7 @@ public class VersionTests
 		IVersionRange range = parseVersion("1.0.2-v20150114");
 		assertNotNull(range);
 		assertEquals("1.0.2-v20150114", range.toString());
-	}
+	}	
 
 	/** Common test code
 	 * 

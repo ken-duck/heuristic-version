@@ -45,7 +45,7 @@ import net.ossindex.version.IVersion;
 public class SemanticVersion implements Comparable<IVersion>, IVersion
 {
 	private static final Logger LOG = LoggerFactory.getLogger(SemanticVersion.class);
-	private Version v;
+	protected Version head;
 	
 	/** Use an external library for parsing.
 	 * 
@@ -58,24 +58,24 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	
 	public SemanticVersion(int major)
 	{
-		v = Version.forIntegers(major);
+		head = Version.forIntegers(major);
 	}
 	
 	public SemanticVersion(int major, int minor)
 	{
-		v = Version.forIntegers(major, minor);
+		head = Version.forIntegers(major, minor);
 	}
 	
 	public SemanticVersion(int major, int minor, int patch)
 	{
-		v = Version.forIntegers(major, minor, patch);
+		head = Version.forIntegers(major, minor, patch);
 	}
+	
 	
 	// Used by subclasses only
 	protected SemanticVersion()
 	{
 	}
-	
 
 	/** Set the version
 	 * 
@@ -83,7 +83,7 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	 */
 	protected void setVersion(String buf)
 	{
-		v = Version.valueOf(buf);
+		head = Version.valueOf(buf);
 	}
 
 	/*
@@ -93,8 +93,8 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	@Override
 	public int getMajor()
 	{
-		if(v == null) return 0;
-		return v.getMajorVersion();
+		if(head == null) return 0;
+		return head.getMajorVersion();
 	}
 
 	/*
@@ -104,8 +104,8 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	@Override
 	public int getMinor()
 	{
-		if(v == null) return 0;
-		return v.getMinorVersion();
+		if(head == null) return 0;
+		return head.getMinorVersion();
 	}
 
 	/*
@@ -115,10 +115,19 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	@Override
 	public int getPatch()
 	{
-		if(v == null) return 0;
-		return v.getPatchVersion();
+		if(head == null) return 0;
+		return head.getPatchVersion();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.IVersion#getBuild()
+	 */
+	@Override
+	public int getBuild() {
+		throw new UnsupportedOperationException();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -129,9 +138,9 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		if(o instanceof SemanticVersion)
 		{
 			SemanticVersion v = (SemanticVersion)o;
-			if(this.v != null)
+			if(this.head != null)
 			{
-				return this.v.equals(v.v);
+				return this.head.equals(v.head);
 			}
 			else
 			{
@@ -148,9 +157,9 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	@Override
 	public int hashCode()
 	{
-		if(v != null)
+		if(head != null)
 		{
-			return v.hashCode();
+			return head.hashCode();
 		}
 		return super.hashCode();
 	}
@@ -166,7 +175,7 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		{
 			SemanticVersion sv = (SemanticVersion)other;
 			// If neither is named, then compare them as semantic values
-			return this.v.compareTo(sv.v);
+			return this.head.compareTo(sv.head);
 		}
 		else
 		{
@@ -182,7 +191,7 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	@Override
 	public String toString()
 	{
-		return v.toString();
+		return head.toString();
 	}
 
 	/** Returns true if this represents a stable release. We take this to mean
@@ -201,6 +210,42 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	 */
 	public Version getVersionImpl()
 	{
-		return v;
+		return head;
+	}
+
+	public boolean lessThan(IVersion version) {
+		// Can the versions be compared?
+		if(!(version instanceof SemanticVersion)) {
+			return false;
+		}
+		
+		return head.lessThan(((SemanticVersion)version).head);
+	}
+
+	public boolean lessThanOrEqualTo(IVersion version) {
+		// Can the versions be compared?
+		if(!(version instanceof SemanticVersion)) {
+			return false;
+		}
+		
+		return head.lessThanOrEqualTo(((SemanticVersion)version).head);
+	}
+
+	public boolean greaterThan(IVersion version) {
+		// Can the versions be compared?
+		if(!(version instanceof SemanticVersion)) {
+			return false;
+		}
+		
+		return head.greaterThan(((SemanticVersion)version).head);
+	}
+
+	public boolean greaterThanOrEqualTo(IVersion version) {
+		// Can the versions be compared?
+		if(!(version instanceof SemanticVersion)) {
+			return false;
+		}
+		
+		return head.greaterThanOrEqualTo(((SemanticVersion)version).head);
 	}
 }

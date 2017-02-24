@@ -111,7 +111,7 @@ public class RangeTests
 		assertTrue(range.contains(VersionFactory.getVersion("1.2.9")));
 		assertTrue(range.contains(VersionFactory.getVersion("1.2.99")));
 		assertFalse(range.contains(VersionFactory.getVersion("1.2.5")));
-		assertFalse(range.contains(VersionFactory.getVersion("1.2.5.99")));
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.99")));
 	}
 
 	@Test
@@ -175,5 +175,187 @@ public class RangeTests
 		assertFalse(range.contains(VersionFactory.getVersion("3.0.4")));
 		assertFalse(range.contains(VersionFactory.getVersion("2.8.9")));
 		assertFalse(range.contains(VersionFactory.getVersion("3.1.4")));
+	}
+	
+	@Test
+	public void testLtRcRange()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
+		assertNotNull(range);
+		assertEquals("<1.2.5-rc5", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.4")));
+	}
+
+	
+	@Test
+	public void testRcLtRcRange()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
+		assertNotNull(range);
+		assertEquals("<1.2.5-rc5", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5-rc4")));
+	}
+	
+	@Test
+	public void testNotLtRcRange()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
+		assertNotNull(range);
+		assertEquals("<1.2.5-rc5", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.6")));
+	}
+
+	
+	@Test
+	public void testNotRcLtRcRange()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
+		assertNotNull(range);
+		assertEquals("<1.2.5-rc5", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.5-rc6")));
+	}
+	
+	@Test
+	public void testLt4digitRange1()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.5")));
+	}
+	
+	@Test
+	public void testLt4digitRange2()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
+	}
+
+	@Test
+	public void testLt4digitRange3()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.4.6")));
+	}
+	
+	@Test
+	public void testLte4digitRange1()
+	{
+		IVersionRange range = VersionFactory.getRange("<=1.2.5.0");
+		assertNotNull(range);
+		assertEquals("<=1.2.5.0", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
+	}
+
+	@Test
+	public void testLte4digitRange2()
+	{
+		IVersionRange range = VersionFactory.getRange("<=1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<=1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.5")));
+	}
+
+	@Test
+	public void testLte4digitRange3()
+	{
+		IVersionRange range = VersionFactory.getRange("<=1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<=1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.6")));
+	}
+
+	@Test
+	public void testNotLt4digitRange1()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<1.2.5.6", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.5.7")));
+	}
+
+	@Test
+	public void testNotLt4digitRange2()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.2.5.6");
+		assertNotNull(range);
+		assertEquals("<1.2.5.6", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.5.6")));
+	}
+	
+	@Test
+	public void testGt4digitRange1()
+	{
+		IVersionRange range = VersionFactory.getRange(">1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
+	}
+	
+	@Test
+	public void testNotGt4digitRange2()
+	{
+		IVersionRange range = VersionFactory.getRange(">1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">1.2.5.6", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.5")));
+	}
+
+	@Test
+	public void testNotGt4digitRange3()
+	{
+		IVersionRange range = VersionFactory.getRange(">1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">1.2.5.6", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.4.6")));
+	}
+	
+	@Test
+	public void testGte4digitRange1()
+	{
+		IVersionRange range = VersionFactory.getRange(">=1.2.5.0");
+		assertNotNull(range);
+		assertEquals(">=1.2.5.0", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
+	}
+
+	@Test
+	public void testGte4digitRange2()
+	{
+		IVersionRange range = VersionFactory.getRange(">=1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">=1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
+	}
+
+	@Test
+	public void testGte4digitRange3()
+	{
+		IVersionRange range = VersionFactory.getRange(">=1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">=1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.6")));
+	}
+
+	@Test
+	public void testNotGt4digitRange1()
+	{
+		IVersionRange range = VersionFactory.getRange(">1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">1.2.5.6", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("1.2.5.5")));
+	}
+
+	@Test
+	public void testGt4digitRange2()
+	{
+		IVersionRange range = VersionFactory.getRange(">1.2.5.6");
+		assertNotNull(range);
+		assertEquals(">1.2.5.6", range.toString());
+		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
 	}
 }

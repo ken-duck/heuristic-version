@@ -63,27 +63,43 @@ public class VersionRange implements IVersionRange
 	@Override
 	public boolean contains(IVersion version)
 	{
-		if(version instanceof SemanticVersion)
-		{
-			Version myVer = this.version.getVersionImpl();
-			Version yourVer = ((SemanticVersion)version).getVersionImpl();
+		
+		// Can the versions be compared?
+		if(!(version instanceof SemanticVersion)) {
+			return false;
+		}
+		
+		// We always want the extended version on the left, since it has the
+		// more complex code.
+		if (this.version instanceof ExtendedSemanticVersion) {
 			switch(operator)
 			{
 			case ">":
-				return myVer.lessThan(yourVer);
+				return this.version.lessThan(version);
 			case ">=":
-				return myVer.lessThanOrEqualTo(yourVer);
+				return this.version.lessThanOrEqualTo(version);
 			case "<":
-				return myVer.greaterThan(yourVer);
+				return this.version.greaterThan(version);
 			case "<=":
-				return myVer.greaterThanOrEqualTo(yourVer);
+				return this.version.greaterThanOrEqualTo(version);
+			default:
+				throw new IllegalArgumentException("Invalid operator: " + operator);
+			}
+		} else {
+			switch(operator)
+			{
+			case "<":
+				return ((SemanticVersion)version).lessThan(this.version);
+			case "<=":
+				return ((SemanticVersion)version).lessThanOrEqualTo(this.version);
+			case ">":
+				return ((SemanticVersion)version).greaterThan(this.version);
+			case ">=":
+				return ((SemanticVersion)version).greaterThanOrEqualTo(this.version);
 			default:
 				throw new IllegalArgumentException("Invalid operator: " + operator);
 			}
 		}
-
-		// If we get here, the versions cannot be compared
-		return false;
 	}
 
 	/*

@@ -51,6 +51,12 @@ public interface IVersion extends Comparable<IVersion>
 	 * @return The patch number, if it exists for this version
 	 */
 	public int getPatch();
+	
+	/**
+	 * 
+	 * @return The build number, if it exists for this version
+	 */
+	public int getBuild();
 
 	/** Returns true if this represents a stable release. We take this to mean
 	 * unnamed and no suffix.
@@ -58,4 +64,5 @@ public interface IVersion extends Comparable<IVersion>
 	 * @return True if this is a stable release
 	 */
 	public boolean isStable();
+
 }

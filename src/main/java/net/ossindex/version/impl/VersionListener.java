@@ -55,18 +55,20 @@ public class VersionListener extends VersionBaseListener
 	@Override
 	public void exitNumeric_version(VersionParser.Numeric_versionContext ctx)
 	{
-		SemanticVersion version = null;
+		IVersion version = null;
 
 		int count = ctx.getChildCount();
 		switch(count)
 		{
 		case 1:
+		case 2:
 		{
 			int major = Integer.parseInt(ctx.getChild(0).getText());
 			version = new SemanticVersion(major);
 			break;
 		}
 		case 3:
+		case 4:
 		{
 			int major = Integer.parseInt(ctx.getChild(0).getText());
 			int minor = Integer.parseInt(ctx.getChild(2).getText());
@@ -74,11 +76,22 @@ public class VersionListener extends VersionBaseListener
 			break;
 		}
 		case 5:
+		case 6:
 		{
 			int major = Integer.parseInt(ctx.getChild(0).getText());
 			int minor = Integer.parseInt(ctx.getChild(2).getText());
 			int patch = Integer.parseInt(ctx.getChild(4).getText());
 			version = new SemanticVersion(major, minor, patch);
+			break;
+		}
+		case 7:
+		case 8:
+		{
+			int major = Integer.parseInt(ctx.getChild(0).getText());
+			int minor = Integer.parseInt(ctx.getChild(2).getText());
+			int patch = Integer.parseInt(ctx.getChild(4).getText());
+			int build = Integer.parseInt(ctx.getChild(6).getText());
+			version = new ExtendedSemanticVersion(major, minor, patch, build);
 			break;
 		}
 		}
