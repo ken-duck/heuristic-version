@@ -358,4 +358,13 @@ public class RangeTests
 		assertEquals(">1.2.5.6", range.toString());
 		assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
 	}
+	
+	@Test
+	public void test4digitRangeWith3DigitRange()
+	{
+		IVersionRange range = VersionFactory.getRange("<1.8.0.9");
+		assertNotNull(range);
+		assertEquals("<1.8.0.9", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("2.3.2")));
+	}
 }

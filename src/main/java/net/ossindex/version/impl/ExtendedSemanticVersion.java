@@ -116,6 +116,10 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 			return true;
 		}
 		
+		if (head.greaterThan(((SemanticVersion)version).head)) {
+			return false;
+		}
+		
 		if (version instanceof ExtendedSemanticVersion) {
 			return tail.lessThan(((ExtendedSemanticVersion)version).tail);
 		}
@@ -132,6 +136,10 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 		// Less than automatically works
 		if (head.lessThan(((SemanticVersion)version).head)) {
 			return true;
+		}
+		
+		if (head.greaterThan(((SemanticVersion)version).head)) {
+			return false;
 		}
 		
 		if (version instanceof ExtendedSemanticVersion) {
@@ -155,6 +163,10 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 			return true;
 		}
 		
+		if (head.lessThan(((SemanticVersion)version).head)) {
+			return false;
+		}
+		
 		if (version instanceof ExtendedSemanticVersion) {
 			return tail.greaterThan(((ExtendedSemanticVersion)version).tail);
 		}
@@ -170,6 +182,10 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 		
 		if (head.greaterThan(((SemanticVersion)version).head)) {
 			return true;
+		}
+		
+		if (head.lessThan(((SemanticVersion)version).head)) {
+			return false;
 		}
 		
 		if (version instanceof ExtendedSemanticVersion) {
