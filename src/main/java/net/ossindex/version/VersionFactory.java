@@ -27,15 +27,17 @@
 package net.ossindex.version;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.EmptyStackException;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import net.ossindex.version.impl.NamedVersion;
+import net.ossindex.version.impl.OrRange;
 import net.ossindex.version.impl.VersionListener;
 import net.ossindex.version.impl.VersionSet;
 import net.ossindex.version.parser.VersionLexer;
@@ -78,6 +80,9 @@ public class VersionFactory
 	public static IVersion getVersion(String vstring)
 	{
 		IVersionRange range = getRange(vstring);
+		if (range == null) {
+			return null;
+		}
 		return range.getMinimum();
 	}
 
@@ -101,6 +106,10 @@ public class VersionFactory
 	 */
 	public static IVersionRange getRange(String vstring)
 	{
+		if (vstring == null || vstring.isEmpty()) {
+			IVersion version = new NamedVersion("");
+			return new VersionSet(version);
+		}
 		try
 		{
 			InputStream stream = new ByteArrayInputStream(vstring.getBytes(StandardCharsets.UTF_8));
@@ -120,6 +129,9 @@ public class VersionFactory
 			IVersionRange range = listener.getRange();
 			return range;
 		}
+		catch (EmptyStackException e) {
+			System.err.println("Could not parse: " + vstring);
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -136,6 +148,31 @@ public class VersionFactory
 	 */
 	public static IVersionRange getRange(String[] versions)
 	{
-		return null;
+		if (versions == null) {
+			return null;
+		}
+		IVersionRange results = null;
+		for (String version : versions) {
+			IVersionRange range = VersionFactory.getRange(version);
+			if (results == null) {
+				results = range;
+			} else {
+				results = new OrRange(results, range);
+			}
+		}
+		return results;
+	}
+
+	/** Join this set of ranges together. This could result in a set, or in a
+	 * logical range.
+	 * 
+	 * @param versions
+	 * @return
+	 */
+	public static IVersionRange getRange(Collection<String> versions) {
+		if (versions == null) {
+			return null;
+		}
+		return getRange(versions.toArray(new String[versions.size()]));
 	}
 }
