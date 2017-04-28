@@ -247,7 +247,15 @@ public class VersionTests
 		IVersionRange range = parseVersion("1.0.2-v20150114");
 		assertNotNull(range);
 		assertEquals("1.0.2-v20150114", range.toString());
-	}	
+	}
+	
+	@Test
+	public void testFinalVersion() throws IOException
+	{
+		IVersionRange range = parseVersion("4.3.2.Final");
+		assertNotNull(range);
+		assertEquals("4.3.2", range.toString());
+	}
 
 	/** Common test code
 	 * 

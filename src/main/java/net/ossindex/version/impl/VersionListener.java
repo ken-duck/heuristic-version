@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 VÃ¶r Security Inc.
+ *	Copyright (c) 2015-2016 Vör Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -116,23 +116,49 @@ public class VersionListener extends VersionBaseListener
 			int patch = Integer.parseInt(ctx.getChild(4).getText());
 			version = new SemanticVersion(major, minor, patch);
 			break;
-		case 6:
+		case 6: {
 			//1.2.3alpha
-			version = new SemanticVersion(
-					ctx.getChild(0).getText() + "."
-							+ ctx.getChild(2).getText() + "."
-							+ ctx.getChild(4).getText() + "-"
-							+ ctx.getChild(5).getText());
+			String postfix = ctx.getChild(5).getText();
+			switch (postfix.toUpperCase()) {
+			case "RELEASE":
+			case "FINAL":
+				version = new SemanticVersion(
+						ctx.getChild(0).getText() + "."
+								+ ctx.getChild(2).getText() + "."
+								+ ctx.getChild(4).getText());
+				break;
+			default:
+				version = new SemanticVersion(
+						ctx.getChild(0).getText() + "."
+								+ ctx.getChild(2).getText() + "."
+								+ ctx.getChild(4).getText() + "-"
+								+ ctx.getChild(5).getText());
+				break;
+			}
 			break;
-		case 7:
+		}
+		case 7: {
 			//1.2.3-alpha
 			//1.2.3.alpha
-			version = new SemanticVersion(
-					ctx.getChild(0).getText() + "."
-							+ ctx.getChild(2).getText() + "."
-							+ ctx.getChild(4).getText() + "-"
-							+ ctx.getChild(6).getText());
+			String postfix = ctx.getChild(6).getText();
+			switch (postfix.toUpperCase()) {
+			case "RELEASE":
+			case "FINAL":
+				version = new SemanticVersion(
+						ctx.getChild(0).getText() + "."
+								+ ctx.getChild(2).getText() + "."
+								+ ctx.getChild(4).getText());
+				break;
+			default:
+				version = new SemanticVersion(
+						ctx.getChild(0).getText() + "."
+								+ ctx.getChild(2).getText() + "."
+								+ ctx.getChild(4).getText() + "-"
+								+ ctx.getChild(6).getText());
+				break;
+			}
 			break;
+		}
 		}
 		stack.push(version);
 	}

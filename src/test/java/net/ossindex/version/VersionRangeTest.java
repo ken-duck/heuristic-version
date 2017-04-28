@@ -52,5 +52,4 @@ public class VersionRangeTest
 		assertNotNull(range);
 		assertEquals("2.5.6-SEC01 | 2.5.6-SEC02", range.toString());
 	}
-
 }

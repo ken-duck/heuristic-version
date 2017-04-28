@@ -123,7 +123,7 @@ postfix_version
 	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
 	;
 
-/** Simple numeric matching. Strip training dots if they exist.
+/** Simple numeric matching. Strip trailing dots if they exist.
  */
 numeric_version
 	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.'?
