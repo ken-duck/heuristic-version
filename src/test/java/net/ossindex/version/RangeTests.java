@@ -367,4 +367,14 @@ public class RangeTests
 		assertEquals("<1.8.0.9", range.toString());
 		assertFalse(range.contains(VersionFactory.getVersion("2.3.2")));
 	}
+	
+	
+	@Test
+	public void testRangeContainsRelease()
+	{
+		IVersionRange range = VersionFactory.getRange(">=2.5.0 <=2.5.6 || 2.5.6.SEC01 || 2.5.6.SEC02 || 2.5.7 || >=3.0.0 <3.0.3");
+		assertNotNull(range);
+		assertEquals("(>=2.5.0 & <=2.5.6) | (2.5.6-SEC01 | (2.5.6-SEC02 | (2.5.7 | (>=3.0.0 & <3.0.3))))", range.toString());
+		assertFalse(range.contains(VersionFactory.getVersion("4.3.7.RELEASE")));
+	}
 }

@@ -58,8 +58,12 @@ range_type
 	;
 
 union_range
-	: range_type OR union_range
+	: version OR union_range
+	| version OR version
+	| version OR range_type
+	| range_type OR union_range
 	| range_type OR range_type
+	| range_type OR version
 	;
 
 /** Ranges connected by logical operators

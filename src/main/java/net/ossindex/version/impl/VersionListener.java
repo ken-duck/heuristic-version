@@ -255,7 +255,20 @@ public class VersionListener extends VersionBaseListener
 	{
 		Object o1 = stack.pop();
 		Object o2 = stack.pop();
+		
+		IVersionRange r1 = null;
+		IVersionRange r2 = null;
+		if (o1 instanceof IVersion) {
+			r1 = new VersionSet((IVersion)o1);
+		} else {
+			r1 = (IVersionRange)o1;
+		}
+		if (o2 instanceof IVersion) {
+			r2 = new VersionSet((IVersion)o2);
+		} else {
+			r2 = (IVersionRange)o2;
+		}
 
-		stack.push(new OrRange((IVersionRange)o2, (IVersionRange)o1));
+		stack.push(new OrRange(r2, r1));
 	}
 }
