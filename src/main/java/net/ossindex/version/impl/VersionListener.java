@@ -122,6 +122,7 @@ public class VersionListener extends VersionBaseListener
 			switch (postfix.toUpperCase()) {
 			case "RELEASE":
 			case "FINAL":
+			case "GA":
 				version = new SemanticVersion(
 						ctx.getChild(0).getText() + "."
 								+ ctx.getChild(2).getText() + "."
@@ -144,6 +145,7 @@ public class VersionListener extends VersionBaseListener
 			switch (postfix.toUpperCase()) {
 			case "RELEASE":
 			case "FINAL":
+			case "GA":
 				version = new SemanticVersion(
 						ctx.getChild(0).getText() + "."
 								+ ctx.getChild(2).getText() + "."
