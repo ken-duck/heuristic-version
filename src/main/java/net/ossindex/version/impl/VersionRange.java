@@ -38,6 +38,8 @@ import net.ossindex.version.IVersionRange;
  */
 public class VersionRange implements IVersionRange
 {
+	private String type;
+	
 	/**
 	 * 
 	 */
@@ -215,5 +217,13 @@ public class VersionRange implements IVersionRange
 	@Override
 	public IVersionRange getSimplifiedRange() {
 		return this;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return type;
 	}
 }

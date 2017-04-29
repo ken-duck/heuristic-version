@@ -38,6 +38,8 @@ import net.ossindex.version.IVersionRange;
  */
 public class BoundedVersionRange implements IVersionRange
 {
+	private String type;
+	
 	private Expression expression;
 	
 	/**
@@ -160,5 +162,13 @@ public class BoundedVersionRange implements IVersionRange
 	@Override
 	public IVersionRange getSimplifiedRange() {
 		return this;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return type;
 	}
 }

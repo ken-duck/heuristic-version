@@ -175,4 +175,9 @@ public class VersionFactory
 		}
 		return getRange(versions.toArray(new String[versions.size()]));
 	}
+
+	public static boolean isMavenRange(String vstring) {
+		IVersionRange range = VersionFactory.getRange(vstring);
+		return "maven".equals(range.getType());
+	}
 }

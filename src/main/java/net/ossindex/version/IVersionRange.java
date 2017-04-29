@@ -76,4 +76,18 @@ public interface IVersionRange
 	 * @return
 	 */
 	public abstract IVersionRange getSimplifiedRange();
+
+	/**
+	 * Give the range a type. This indicates the "style" of the range.
+	 * 
+	 * @param type
+	 */
+	public abstract void setType(String type);
+
+	/**
+	 * Get the range type
+	 * 
+	 * @return
+	 */
+	public abstract String getType();
 }

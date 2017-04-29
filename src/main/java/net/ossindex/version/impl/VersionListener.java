@@ -273,7 +273,7 @@ public class VersionListener extends VersionBaseListener
 		}
 		// Everything else is a fall through
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.ossindex.version.parser.VersionBaseListener#exitUnion_range(net.ossindex.version.parser.VersionParser.Union_rangeContext)
@@ -283,7 +283,7 @@ public class VersionListener extends VersionBaseListener
 	{
 		Object o1 = stack.pop();
 		Object o2 = stack.pop();
-		
+
 		IVersionRange r1 = null;
 		IVersionRange r2 = null;
 		if (o1 instanceof IVersion) {
@@ -299,4 +299,95 @@ public class VersionListener extends VersionBaseListener
 
 		stack.push(new OrRange(r2, r1));
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.parser.VersionBaseListener#exitMaven_ranges(net.ossindex.version.parser.VersionParser.Maven_rangesContext)
+	 */
+	@Override
+	public void exitMaven_ranges(VersionParser.Maven_rangesContext ctx) {
+		if (ctx.getChildCount() == 3) {
+			IVersionRange r1 = (IVersionRange) stack.pop();
+			IVersionRange r2 = (IVersionRange) stack.pop();
+			stack.push(new OrRange(r2, r1));
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.parser.VersionBaseListener#exitMaven_inclusive_range(net.ossindex.version.parser.VersionParser.Maven_inclusive_rangeContext)
+	 */
+	@Override
+	public void exitMaven_range(VersionParser.Maven_rangeContext ctx) {
+
+		// This could be a version set
+		if (ctx.getChildCount() == 3) {
+			SemanticVersion v1 = (SemanticVersion)stack.pop();
+			VersionSet set = new VersionSet(v1);
+			stack.push(set);
+			return;
+		}
+
+		// Otherwise it is a range. Load the tokens first.
+		int index = 0;
+		String open = ctx.getChild(index).getText();
+		index++;
+		SemanticVersion v1 = null;
+		SemanticVersion v2 = null;
+		String text = ctx.getChild(index).getText();
+		if (!",".equals(text)) {
+			v1 = (SemanticVersion)stack.pop();
+			index++;
+		}
+		index++;
+		String close = null;
+		text = ctx.getChild(index).getText();
+		if ("]".equals(text) || ")".equals(text)) {
+			close = text;
+		} else {
+			v2 = (SemanticVersion)stack.pop();
+			index++;
+			close = ctx.getChild(index).getText();
+		}
+		
+		// We need to swap the values, cause they are peeled of the stack in reverse order
+		if (v1 != null && v2 != null) {
+			SemanticVersion tmp = v1;
+			v1 = v2;
+			v2 = tmp;
+		}
+
+		// Figure out what the range endpoints are
+		IVersionRange r1 = null;
+		if (v1 != null) {
+			switch (open) {
+			case "(": r1 = new VersionRange(">", v1); break;
+			case "[": r1 = new VersionRange(">=", v1); break;
+			}
+		}
+
+		IVersionRange r2 = null;
+		if (v2 != null) {
+			switch (close) {
+			case ")": r2 = new VersionRange("<", v2); break;
+			case "]": r2 = new VersionRange("<=", v2); break;
+			}
+		}
+
+		// Now assemble the range
+		if (r1 != null) {
+			if (r2 != null) {
+				IVersionRange andRange = new AndRange(r1, r2);
+				andRange.setType("maven");
+				stack.push(andRange);
+			} else {
+				stack.push(r1);
+				r1.setType("maven");
+			}
+		} else {
+			stack.push(r2);
+			r2.setType("maven");
+		}
+	}
+
 }

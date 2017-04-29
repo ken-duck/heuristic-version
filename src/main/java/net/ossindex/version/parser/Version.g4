@@ -38,11 +38,29 @@ grammar Version;
 }
 
 range
-	: version_set EOF
+	: maven_ranges EOF
+	| version_set EOF
 	| union_range EOF
 	| range_type EOF
 	| broken_range EOF
 	;
+
+maven_ranges
+    : maven_range
+    | maven_range ',' maven_ranges
+    ;
+
+/**
+ * Handle a variety of maven-style ranges
+ */
+maven_range
+    : ('[' | '(') (
+      | version ',' version
+      | version ','
+      | version
+      | ',' version
+      ) (']' | ')')
+    ;
 
 /** A few special cases of broken ranges. We are trying to handle unfortunate
  * situations as best we can to get SOMETHING from the chaos.

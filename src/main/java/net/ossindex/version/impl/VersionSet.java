@@ -41,6 +41,8 @@ import net.ossindex.version.IVersionRange;
  */
 public class VersionSet implements IVersionRange, Iterable<IVersion>
 {
+	private String type;
+	
 	/**
 	 * Used for both atomic and simple versions
 	 */
@@ -187,5 +189,13 @@ public class VersionSet implements IVersionRange, Iterable<IVersion>
 		}
 		
 		return new BoundedVersionRange(min, max);
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return type;
 	}
 }
