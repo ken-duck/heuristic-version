@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2016 Vör Security Inc.
+ *	Copyright (c) 2016-2017 Vor Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -34,18 +34,61 @@ import net.ossindex.version.IVersionRange;
  * @author Ken Duck
  *
  */
-public class AndRange extends LogicalRange implements IVersionRange
+public class AndRange extends AbstractCommonRange
 {
-
 	/**
 	 * 
-	 * @param operator
-	 * @param version
+	 */
+	protected IVersionRange range1;
+	protected IVersionRange range2;
+	
+	private String type;
+	private boolean hasErrors = false;
+
+
+	/**
+	 * And the ranges, ordering them in Vor's preferred order.
 	 */
 	public AndRange(IVersionRange range1, IVersionRange range2)
 	{
-		this.range1 = range1;
-		this.range2 = range2;
+		// The ranges should intersect
+		if (!range1.intersects(range2)) {
+			throw new AssertionError("Anded ranges do not intersect; this can never happen");
+		}
+		
+		// If both ranges are VersionRange then these are likely overlapping
+		// ranges which cause a bounded range. This is the most likely case.
+		if ((range1 instanceof VersionRange) && (range2 instanceof VersionRange)) {
+			if (((VersionRange)range1).isUnbounded()) {
+				if (((VersionRange)range2).isUnbounded()) {
+					IVersion v1 = range1.getMinimum();
+					IVersion v2 = range2.getMinimum();
+					if (v1.compareTo(v2) <= 0) {
+						this.range1 = range1;
+						this.range2 = range2;
+					} else {
+						this.range2 = range1;
+						this.range1 = range2;
+					}
+				} else {
+					this.range1 = range1;
+					this.range2 = range2;
+				}
+			} else if (((VersionRange)range2).isUnbounded()) {
+				this.range2 = range1;
+				this.range1 = range2;
+			} else {
+				// Both ranges are from 0 to n/m, I don't have a preference cause that
+				// is silly.
+				this.range1 = range1;
+				this.range2 = range2;
+			}
+		} else {
+			// I honestly doubt we will run into situations like this, so I don't really
+			// care on order for now.
+			this.range1 = range1;
+			this.range2 = range2;
+		}
 	}
 
 	/*
@@ -85,7 +128,8 @@ public class AndRange extends LogicalRange implements IVersionRange
 	@Override
 	public IVersion getMinimum()
 	{
-		throw new UnsupportedOperationException();
+		IVersion v1 = range1.getMinimum();
+		return v1;
 	}
 
 	/*
@@ -121,5 +165,49 @@ public class AndRange extends LogicalRange implements IVersionRange
 	@Override
 	public IVersionRange getSimplifiedRange() {
 		return this;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		if (type == null) {
+			type = range1.getType();
+		}
+		if (type == null) {
+			type = range2.getType();
+		}
+		return type;
+	}
+	
+	public void setHasErrors(boolean b) {
+		hasErrors = b;
+	}
+
+	public boolean hasErrors() {
+		if (hasErrors) {
+			return true;
+		}
+		return range1.hasErrors() || range2.hasErrors();
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		if (!range1.isDiscrete() && !range1.isSimple()) {
+			sb.append("(").append(range1).append(")");
+		} else {
+			sb.append(range1);
+		}
+		sb.append(" & ");
+		if (!range2.isDiscrete() && !range2.isSimple()) {
+			sb.append("(").append(range2).append(")");
+		} else {
+			sb.append(range2);
+		}
+		return sb.toString();
 	}
 }

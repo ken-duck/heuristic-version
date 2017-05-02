@@ -374,7 +374,7 @@ public class ContainsTests
 	{
 		IVersionRange range = VersionFactory.getRange(">=2.5.0 <=2.5.6 || 2.5.6.SEC01 || 2.5.6.SEC02 || 2.5.7 || >=3.0.0 <3.0.3");
 		assertNotNull(range);
-		assertEquals("(>=2.5.0 & <=2.5.6) | (2.5.6-SEC01 | (2.5.6-SEC02 | (2.5.7 | (>=3.0.0 & <3.0.3))))", range.toString());
+		assertEquals("(>=2.5.0 & <=2.5.6) | 2.5.6-SEC01 | 2.5.6-SEC02 | 2.5.7 | (>=3.0.0 & <3.0.3)", range.toString());
 		assertFalse(range.contains(VersionFactory.getVersion("4.3.7.RELEASE")));
 	}
 	
@@ -383,7 +383,7 @@ public class ContainsTests
 	{
 		IVersionRange range = VersionFactory.getRange(">=4.1.0 <4.2.1 || >=4.3.0 <4.3.2 || >=5.0.0 <5.1.2");
 		assertNotNull(range);
-		assertEquals("(>=4.1.0 & <4.2.1) | ((>=4.3.0 & <4.3.2) | (>=5.0.0 & <5.1.2))", range.toString());
+		assertEquals("(>=4.1.0 & <4.2.1) | (>=4.3.0 & <4.3.2) | (>=5.0.0 & <5.1.2)", range.toString());
 		assertFalse(range.contains(VersionFactory.getVersion("4.3.2")));
 		assertFalse(range.contains(VersionFactory.getVersion("4.3.2.Final")));
 		assertFalse(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));
@@ -427,7 +427,7 @@ public class ContainsTests
 	{
 		IVersionRange range = VersionFactory.getRange("4.3.2-Final | 4.3.1-GA");
 		assertNotNull(range);
-		assertEquals("4.3.2 | 4.3.1", range.toString());
+		assertEquals("4.3.1 | 4.3.2", range.toString());
 		assertTrue(range.contains(VersionFactory.getVersion("4.3.2")));
 		assertTrue(range.contains(VersionFactory.getVersion("4.3.2.Final")));
 		assertTrue(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));

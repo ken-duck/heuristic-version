@@ -256,6 +256,22 @@ public class VersionTests
 		assertNotNull(range);
 		assertEquals("4.3.2", range.toString());
 	}
+	
+	@Test
+	public void testEqualVersion() throws IOException
+	{
+		IVersionRange range = parseVersion("= 4.3.2.Final");
+		assertNotNull(range);
+		assertEquals("4.3.2", range.toString());
+	}
+	
+	@Test
+	public void testUnderscoreVersion() throws IOException
+	{
+		IVersionRange range = parseVersion("= 4.3.2.Final_Score");
+		assertNotNull(range);
+		assertEquals("4.3.2-Final_Score", range.toString());
+	}
 
 	/** Common test code
 	 * 

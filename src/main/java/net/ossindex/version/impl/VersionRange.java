@@ -26,8 +26,6 @@
  */
 package net.ossindex.version.impl;
 
-import com.github.zafarkhaja.semver.Version;
-
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
 
@@ -36,7 +34,7 @@ import net.ossindex.version.IVersionRange;
  * @author Ken Duck
  *
  */
-public class VersionRange implements IVersionRange
+public class VersionRange extends AbstractCommonRange
 {
 	private String type;
 	
@@ -46,6 +44,7 @@ public class VersionRange implements IVersionRange
 	private String operator;
 
 	private SemanticVersion version;
+	private boolean hasErrors = false;
 
 	/**
 	 * 
@@ -199,7 +198,11 @@ public class VersionRange implements IVersionRange
 			if(this.contains(((VersionRange) yourRange).version)) return true;
 		}
 		// Logical ranges need to be broken down
-		else if(yourRange instanceof LogicalRange)
+		else if(yourRange instanceof AndRange)
+		{
+			return yourRange.intersects(this);
+		}
+		else if(yourRange instanceof OrRange)
 		{
 			return yourRange.intersects(this);
 		}
@@ -225,5 +228,27 @@ public class VersionRange implements IVersionRange
 	
 	public String getType() {
 		return type;
+	}
+	
+	
+	public void setHasErrors(boolean b) {
+		hasErrors = b;
+	}
+
+	public boolean hasErrors() {
+		return hasErrors;
+	}
+
+	/**
+	 * An unbounded range goes to infinity
+	 */
+	public boolean isUnbounded() {
+		switch (operator) {
+		case ">":
+		case ">=":
+			return true;
+		default:
+			return false;
+		}
 	}
 }

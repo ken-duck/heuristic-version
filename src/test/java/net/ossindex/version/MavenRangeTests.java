@@ -141,4 +141,15 @@ public class MavenRangeTests
 		assertNotNull(range);
 		assertEquals("(>=3.2.0 & <=3.2.8) | (>=4.0.0 & <=4.0.4)", range.toString());
 	}
+	
+	@Test
+	public void mavenRcTest()
+	{
+		IVersionRange range = VersionFactory.getRange("[2.4-beta,2.4.0-rc1]");
+		assertNotNull(range);
+		assertEquals(">=2.4.0-beta & <=2.4.0-rc1", range.toString());
+		range = VersionFactory.getRange("[2.4beta,2.4.0rc1]");
+		assertNotNull(range);
+		assertEquals(">=2.4.0-beta & <=2.4.0-rc1", range.toString());
+	}
 }

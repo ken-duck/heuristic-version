@@ -36,7 +36,7 @@ import net.ossindex.version.IVersionRange;
  * @author Ken Duck
  *
  */
-public class BoundedVersionRange implements IVersionRange
+public class BoundedVersionRange extends AbstractCommonRange implements IVersionRange
 {
 	private String type;
 	
@@ -52,6 +52,7 @@ public class BoundedVersionRange implements IVersionRange
 	 * Remember the range for toString
 	 */
 	private String range;
+	private boolean hasErrors = false;
 
 	/** A "range" of a single version
 	 * 
@@ -170,5 +171,14 @@ public class BoundedVersionRange implements IVersionRange
 	
 	public String getType() {
 		return type;
+	}
+	
+	
+	public void setHasErrors(boolean b) {
+		hasErrors = b;
+	}
+
+	public boolean hasErrors() {
+		return hasErrors;
 	}
 }

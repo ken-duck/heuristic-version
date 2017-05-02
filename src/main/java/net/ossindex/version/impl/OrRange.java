@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2016 Vör Security Inc.
+ *	Copyright (c) 2016-2017 Vor Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,22 @@
  */
 package net.ossindex.version.impl;
 
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
 
-/** Two ranges anded together
- * 
- * @author Ken Duck
- *
+/** 
+ * Multiple ranges ORed together. The or range allows multiple inputs (not just two)
+ * since it is generally the top level operator.
  */
-public class OrRange extends LogicalRange implements IVersionRange
+public class OrRange extends AbstractCommonRange
 {
+	private SortedSet<IVersionRange> ranges = new TreeSet<IVersionRange>();
+	private String type;
+	private boolean hasErrors = false;
 
 	/**
 	 * 
@@ -44,8 +50,8 @@ public class OrRange extends LogicalRange implements IVersionRange
 	 */
 	public OrRange(IVersionRange range1, IVersionRange range2)
 	{
-		this.range1 = range1;
-		this.range2 = range2;
+		ranges.add(range1);
+		ranges.add(range2);
 	}
 
 	/*
@@ -55,7 +61,12 @@ public class OrRange extends LogicalRange implements IVersionRange
 	@Override
 	public boolean contains(IVersion version)
 	{
-		return range1.contains(version) || range2.contains(version);
+		for (IVersionRange range : ranges) {
+			if (range.contains(version)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -85,7 +96,20 @@ public class OrRange extends LogicalRange implements IVersionRange
 	@Override
 	public IVersion getMinimum()
 	{
-		throw new UnsupportedOperationException();
+		Iterator<IVersionRange> it = ranges.iterator();
+		IVersionRange r1 = it.next();
+		IVersion min = r1.getMinimum();
+		
+		while (it.hasNext()) {
+			IVersionRange r2 = it.next();
+			IVersion v2 = r2.getMinimum();
+			int cmp = min.compareTo(v2);
+			if (cmp > 0) {
+				return min = v2;
+			}
+		}
+		
+		return min;
 	}
 
 	/*
@@ -102,7 +126,7 @@ public class OrRange extends LogicalRange implements IVersionRange
 	{
 		return "|";
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)
@@ -110,7 +134,12 @@ public class OrRange extends LogicalRange implements IVersionRange
 	@Override
 	public boolean intersects(IVersionRange yourRange)
 	{
-		return range1.intersects(yourRange) || range2.intersects(yourRange);
+		for (IVersionRange range : ranges) {
+			if (range.intersects(yourRange)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -119,6 +148,65 @@ public class OrRange extends LogicalRange implements IVersionRange
 	 */
 	@Override
 	public IVersionRange getSimplifiedRange() {
+		return this;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getType() {
+		if (type == null) {
+			for (IVersionRange range : ranges) {
+				type = range.getType();
+				if (type != null) {
+					break;
+				}
+			}
+		}
+		return type;
+	}
+
+	public void setHasErrors(boolean b) {
+		hasErrors = b;
+	}
+
+	public boolean hasErrors() {
+		if (hasErrors) {
+			return true;
+		}
+		
+		for (IVersionRange range : ranges) {
+			if (range.hasErrors()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		Iterator<IVersionRange> it = ranges.iterator();
+		while (it.hasNext()) {
+			IVersionRange range = it.next();
+			if (!range.isDiscrete() && !range.isSimple()) {
+				sb.append("(");
+			}
+			sb.append(range);
+			if (!range.isDiscrete() && !range.isSimple()) {
+				sb.append(")");
+			}
+			if (it.hasNext()) {
+				sb.append(" | ");
+			}
+		}
+		return sb.toString();
+	}
+
+	public OrRange add(IVersionRange range) {
+		ranges.add(range);
 		return this;
 	}
 }

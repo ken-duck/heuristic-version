@@ -31,7 +31,7 @@ package net.ossindex.version;
  * @author Ken Duck
  * 
  */
-public interface IVersionRange
+public interface IVersionRange extends Comparable<IVersionRange>
 {
 	/**
 	 * 
@@ -90,4 +90,8 @@ public interface IVersionRange
 	 * @return
 	 */
 	public abstract String getType();
+
+	public abstract void setHasErrors(boolean b);
+	
+	public abstract boolean hasErrors();
 }

@@ -38,6 +38,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import net.ossindex.version.impl.NamedVersion;
 import net.ossindex.version.impl.OrRange;
+import net.ossindex.version.impl.VersionErrorListener;
 import net.ossindex.version.impl.VersionListener;
 import net.ossindex.version.impl.VersionSet;
 import net.ossindex.version.parser.VersionLexer;
@@ -114,11 +115,18 @@ public class VersionFactory
 		{
 			InputStream stream = new ByteArrayInputStream(vstring.getBytes(StandardCharsets.UTF_8));
 			ANTLRInputStream input = new ANTLRInputStream(stream);
+			
+			VersionErrorListener errorListener = new VersionErrorListener();
+			
 			VersionLexer lexer = new VersionLexer(input);
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(errorListener);
 
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 
 			VersionParser parser = new VersionParser(tokens);
+			
+			parser.addErrorListener(errorListener);
 
 			RangeContext context = parser.range();
 
@@ -127,6 +135,9 @@ public class VersionFactory
 			walker.walk(listener, context);
 
 			IVersionRange range = listener.getRange();
+			if (errorListener.hasErrors()) {
+				range.setHasErrors(true);
+			}
 			return range;
 		}
 		catch (EmptyStackException e) {

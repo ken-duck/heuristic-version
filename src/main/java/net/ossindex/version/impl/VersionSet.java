@@ -39,10 +39,11 @@ import net.ossindex.version.IVersionRange;
  * @author Ken Duck
  *
  */
-public class VersionSet implements IVersionRange, Iterable<IVersion>
+public class VersionSet extends AbstractCommonRange implements Iterable<IVersion>
 {
 	private String type;
-	
+	private boolean hasErrors = false;
+
 	/**
 	 * Used for both atomic and simple versions
 	 */
@@ -197,5 +198,13 @@ public class VersionSet implements IVersionRange, Iterable<IVersion>
 	
 	public String getType() {
 		return type;
+	}
+	
+	public void setHasErrors(boolean b) {
+		hasErrors = b;
+	}
+
+	public boolean hasErrors() {
+		return hasErrors;
 	}
 }

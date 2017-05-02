@@ -94,10 +94,12 @@ logical_range
 	| logical_range {whitespace();} simple_range
 	| logical_range {whitespace();} logical_range
 	
+	| simple_range ',' simple_range
+	| logical_range ',' simple_range
+	| logical_range ',' logical_range
+	
 	| simple_range '&' simple_range
-	
 	| logical_range '&' simple_range
-	
 	| logical_range '&' logical_range
 	;
 
@@ -116,10 +118,10 @@ simple_range
 	;
 
 version
-	: numeric_version
+	: '='? (numeric_version
 	| postfix_version
 	| prefixed_version
-	| named_version
+	| named_version)
 	;
 
 /** A version which has text at the beginning
@@ -139,6 +141,9 @@ postfix_version
 	: NUMBER '.' NUMBER '.' NUMBER identifier
 	| NUMBER '.' NUMBER '.' NUMBER '.' identifier
 	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
+	| NUMBER '.' NUMBER identifier
+	| NUMBER '.' NUMBER '.' identifier
+	| NUMBER '.' NUMBER '-' identifier
 	;
 
 /** Simple numeric matching. Strip trailing dots if they exist.
@@ -160,7 +165,7 @@ named_version
  * We need special handling of the first character
  */
 identifier
-	: ~(NUMBER | '.' | '-' | '&' | OR) any*?
+	: ~(NUMBER | '.' | '-' | '&' | OR | ',') any*?
 	;
 
 /** "any" exclusive of comparison operators and such
@@ -192,5 +197,5 @@ ANY
 	;
 
 WS
-	: (' ' | '\t' | '\\n') -> channel(HIDDEN)
+	: (' ' | '\t' | '\\n' | ' ') -> channel(HIDDEN)
 	;

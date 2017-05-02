@@ -110,11 +110,33 @@ public class VersionListener extends VersionBaseListener
 		int count = ctx.getChildCount();
 		switch(count)
 		{
+		case 4: {
+			//1.2.3alpha
+			String postfix = ctx.getChild(3).getText();
+			switch (postfix.toUpperCase()) {
+			case "RELEASE":
+			case "FINAL":
+			case "GA":
+				version = new SemanticVersion(
+						ctx.getChild(0).getText() + "."
+								+ ctx.getChild(2).getText());
+				break;
+			default:
+				version = new SemanticVersion(
+						ctx.getChild(0).getText() + "."
+								+ ctx.getChild(2).getText() + "."
+								+ "0" + "-"
+								+ ctx.getChild(3).getText());
+				break;
+			}
+			break;
+		}
 		case 5:
-			int major = Integer.parseInt(ctx.getChild(0).getText());
-			int minor = Integer.parseInt(ctx.getChild(2).getText());
-			int patch = Integer.parseInt(ctx.getChild(4).getText());
-			version = new SemanticVersion(major, minor, patch);
+			version = new SemanticVersion(
+					ctx.getChild(0).getText() + "."
+							+ ctx.getChild(2).getText() + "."
+							+ "0" + "-"
+							+ ctx.getChild(4).getText());
 			break;
 		case 6: {
 			//1.2.3alpha
@@ -266,6 +288,7 @@ public class VersionListener extends VersionBaseListener
 				switch(operator)
 				{
 				case "&":
+				case ",":
 					stack.push(new AndRange((IVersionRange)o2, (IVersionRange)o1));
 					break;
 				}
@@ -296,8 +319,14 @@ public class VersionListener extends VersionBaseListener
 		} else {
 			r2 = (IVersionRange)o2;
 		}
-
-		stack.push(new OrRange(r2, r1));
+		
+		if (r1 instanceof OrRange) {
+			stack.push(((OrRange)r1).add(r2));
+		} else if (r2 instanceof OrRange) {
+			stack.push(((OrRange)r2).add(r1));
+		} else {
+			stack.push(new OrRange(r2, r1));
+		}
 	}
 
 	/*
