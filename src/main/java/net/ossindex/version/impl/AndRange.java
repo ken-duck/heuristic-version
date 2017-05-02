@@ -202,7 +202,8 @@ public class AndRange extends AbstractCommonRange
 		} else {
 			sb.append(range1);
 		}
-		sb.append(" & ");
+		// The "&" is implicit
+		sb.append(" ");
 		if (!range2.isDiscrete() && !range2.isSimple()) {
 			sb.append("(").append(range2).append(")");
 		} else {
