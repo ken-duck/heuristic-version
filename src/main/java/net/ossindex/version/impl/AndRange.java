@@ -53,7 +53,7 @@ public class AndRange extends AbstractCommonRange
 	{
 		// The ranges should intersect
 		if (!range1.intersects(range2)) {
-			throw new AssertionError("Anded ranges do not intersect; this can never happen");
+			throw new AssertionError("Anded ranges do not intersect; this can never happen [" + range1 + " & " + range2 + "]");
 		}
 		
 		// If both ranges are VersionRange then these are likely overlapping

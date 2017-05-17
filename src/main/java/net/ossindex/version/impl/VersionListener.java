@@ -268,7 +268,11 @@ public class VersionListener extends VersionBaseListener
 		{
 			Object o1 = stack.pop();
 			Object o2 = stack.pop();
-			stack.push(new AndRange((IVersionRange)o2, (IVersionRange)o1));
+			try {
+				stack.push(new AndRange((IVersionRange)o2, (IVersionRange)o1));
+			} catch (AssertionError e) {
+				e.printStackTrace();
+			}
 		}
 		// Three tokens may be and OR or OR a bracketed version
 		else if(ctx.getChildCount() == 3)
