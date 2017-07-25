@@ -131,7 +131,7 @@ public class MavenRangeTests
 	{
 		IVersionRange range = VersionFactory.getRange("(1.0,2.0],[3.0,4.0)");
 		assertNotNull(range);
-		assertEquals("(>1.0.0 <=2.0.0) | (>=3.0.0 <4.0.0)", range.toString());
+		assertEquals(">1.0.0 <=2.0.0 | >=3.0.0 <4.0.0", range.toString());
 	}
 	
 	@Test
@@ -139,7 +139,7 @@ public class MavenRangeTests
 	{
 		IVersionRange range = VersionFactory.getRange("[3.2,3.2.8.RELEASE], [4.0,4.0.4.RELEASE]");
 		assertNotNull(range);
-		assertEquals("(>=3.2.0 <=3.2.8) | (>=4.0.0 <=4.0.4)", range.toString());
+		assertEquals(">=3.2.0 <=3.2.8 | >=4.0.0 <=4.0.4", range.toString());
 	}
 	
 	@Test

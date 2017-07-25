@@ -18,7 +18,7 @@ public class VersionRangeTest
 	{
 		IVersionRange range = VersionFactory.getRange(">=2.5.0 <=2.5.6 || 2.5.6.SEC01 || 2.5.6.SEC02 || 2.5.7 || >=3.0.0 <3.0.3");
 		assertNotNull(range);
-		assertEquals("(>=2.5.0 <=2.5.6) | 2.5.6-SEC01 | 2.5.6-SEC02 | 2.5.7 | (>=3.0.0 <3.0.3)", range.toString());
+		assertEquals(">=2.5.0 <=2.5.6 | 2.5.6-SEC01 | 2.5.6-SEC02 | 2.5.7 | >=3.0.0 <3.0.3", range.toString());
 	}
 
 	@Test

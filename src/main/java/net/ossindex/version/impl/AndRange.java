@@ -44,6 +44,8 @@ public class AndRange extends AbstractCommonRange
 	
 	private String type;
 	private boolean hasErrors = false;
+	
+	private boolean isBounded = false;
 
 
 	/**
@@ -73,10 +75,12 @@ public class AndRange extends AbstractCommonRange
 				} else {
 					this.range1 = range1;
 					this.range2 = range2;
+					isBounded = true;
 				}
 			} else if (((VersionRange)range2).isUnbounded()) {
 				this.range2 = range1;
 				this.range1 = range2;
+				isBounded = true;
 			} else {
 				// Both ranges are from 0 to n/m, I don't have a preference cause that
 				// is silly.
@@ -118,6 +122,11 @@ public class AndRange extends AbstractCommonRange
 	@Override
 	public boolean isSimple()
 	{
+		if ((range1 instanceof VersionRange) && (range2 instanceof VersionRange)) {
+			if (isBounded) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -139,9 +148,26 @@ public class AndRange extends AbstractCommonRange
 	@Override
 	public IVersion getMaximum()
 	{
+		if (isBounded) {
+			IVersion v2 = range2.getMaximum();
+			return v2;
+		}
+		
 		throw new UnsupportedOperationException();
 	}
 	
+	@Override
+	public boolean contains(IVersionRange yourRange) {
+		// Deal with the simple situation first, which is when we have two ranges
+		// that define a bounded range. In this case both ranges should contain
+		// the target range.
+		if ((range1 instanceof VersionRange) && (range2 instanceof VersionRange)) {
+			return range1.contains(yourRange) && range2.contains(yourRange);
+		}
+		
+		// Unhandled situation
+		return false;
+	}	
 	
 	public String getOperator()
 	{

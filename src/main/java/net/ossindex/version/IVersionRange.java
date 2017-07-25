@@ -72,6 +72,11 @@ public interface IVersionRange extends Comparable<IVersionRange>
 	public abstract boolean intersects(IVersionRange yourRange);
 
 	/**
+	 * Check if one range contains another range.
+	 */
+	public abstract boolean contains(IVersionRange trange);
+	
+	/**
 	 * Get a simplified version range, suitable for users to read quickly
 	 * @return
 	 */

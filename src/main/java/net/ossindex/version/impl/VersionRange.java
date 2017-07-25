@@ -26,6 +26,8 @@
  */
 package net.ossindex.version.impl;
 
+import java.util.Collection;
+
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
 
@@ -212,6 +214,60 @@ public class VersionRange extends AbstractCommonRange
 		}
 		return false;
 	}
+	
+	@Override
+	public boolean contains(IVersionRange yourRange) {
+		
+		// If your range is a version set, each version should be contained in
+		// our range.
+		if(yourRange instanceof VersionSet)
+		{
+			Collection<IVersion> versions = ((VersionSet)yourRange).getVersions();
+			for (IVersion version : versions) {
+				if (!this.contains(version)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		// If the other range is a simple range, then we can just check the extremities
+		// to see if they are contained
+		else if(yourRange instanceof VersionRange)
+		{
+			IVersion minimum = yourRange.getMinimum();
+			
+			if (!this.contains(minimum)) {
+				return false;
+			}
+			
+			IVersion maximum = yourRange.getMaximum();
+			if (maximum != null) {
+				if (!this.contains(maximum)) {
+					return false;
+				}
+			} else {
+				IVersion myMaximum = getMaximum();
+				if (myMaximum != null) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		// We should contain both end points of an AndRange
+		else if(yourRange instanceof AndRange)
+		{
+			if (yourRange.isSimple()) {
+				IVersion min = yourRange.getMinimum();
+				IVersion max = yourRange.getMaximum();
+				return contains(min) && contains(max);
+			}
+		}
+		
+		// Unhandled situation
+		return false;
+	}	
 
 	/*
 	 * (non-Javadoc)

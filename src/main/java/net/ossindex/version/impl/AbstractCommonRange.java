@@ -12,4 +12,8 @@ public abstract class AbstractCommonRange implements IVersionRange {
 		return myMin.compareTo(yourMin);
 	}
 
+	@Override
+	public boolean contains(IVersionRange trange) {
+		return false;
+	}
 }

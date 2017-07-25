@@ -26,6 +26,7 @@
  */
 package net.ossindex.version.impl;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -206,5 +207,9 @@ public class VersionSet extends AbstractCommonRange implements Iterable<IVersion
 
 	public boolean hasErrors() {
 		return hasErrors;
+	}
+
+	public Collection<IVersion> getVersions() {
+		return set;
 	}
 }
