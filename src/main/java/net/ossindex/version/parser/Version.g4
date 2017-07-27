@@ -115,6 +115,7 @@ simple_range
 	| '<=' version
 	| '>' version
 	| '>=' version
+	| '~>' version
 	;
 
 version

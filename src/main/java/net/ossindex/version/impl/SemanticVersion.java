@@ -1,5 +1,5 @@
 /**
- *	Copyright (c) 2015 Vör Security Inc.
+ *	Copyright (c) 2015-2017 Vor Security Inc.
  *	All rights reserved.
  *	
  *	Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,12 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	private static final Logger LOG = LoggerFactory.getLogger(SemanticVersion.class);
 	protected Version head;
 	
+	/**
+	 * Remember the number of significant digits when created. This is important
+	 * for some methods.
+	 */
+	protected int significantDigits = -1;
+	
 	/** Use an external library for parsing.
 	 * 
 	 * @param buf Version we are trying to parse
@@ -59,16 +65,19 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	public SemanticVersion(int major)
 	{
 		head = Version.forIntegers(major);
+		significantDigits = 1;
 	}
 	
 	public SemanticVersion(int major, int minor)
 	{
 		head = Version.forIntegers(major, minor);
+		significantDigits = 2;
 	}
 	
 	public SemanticVersion(int major, int minor, int patch)
 	{
 		head = Version.forIntegers(major, minor, patch);
+		significantDigits = 3;
 	}
 	
 	
@@ -84,6 +93,8 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	protected void setVersion(String buf)
 	{
 		head = Version.valueOf(buf);
+		
+		significantDigits = -1;
 	}
 
 	/*
@@ -247,5 +258,44 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 		}
 		
 		return head.greaterThanOrEqualTo(((SemanticVersion)version).head);
+	}
+	
+	/**
+	 * Get the next logical version in line. For example:
+	 * 
+	 *   1.2.3 becomes 1.2.4
+	 */
+	public SemanticVersion getNextVersion() {
+		int major = head.getMajorVersion();
+		int minor = head.getMinorVersion();
+		int patch = head.getPatchVersion();
+		return new SemanticVersion(major, minor, patch + 1);
+	}
+	
+	/**
+	 * Strip the lowest number and increment the next one up. For example:
+	 * 
+	 *   1.2.3 becomes 1.3.0
+	 */
+	public SemanticVersion getNextParentVersion() {
+		int major = head.getMajorVersion();
+		int minor = head.getMinorVersion();
+		int patch = head.getPatchVersion();
+		
+		switch (significantDigits) {
+		case 1:
+			throw new UnsupportedOperationException();
+		case 2:
+			major++;
+			minor = 0;
+			patch = 0;
+			return new SemanticVersion(major, minor, patch);
+		case 3:
+			minor++;
+			patch = 0;
+			return new SemanticVersion(major, minor, patch);
+		default:
+			throw new UnsupportedOperationException();
+		}
 	}
 }

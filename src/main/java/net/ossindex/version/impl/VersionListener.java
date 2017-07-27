@@ -231,7 +231,19 @@ public class VersionListener extends VersionBaseListener
 		if(o instanceof SemanticVersion)
 		{
 			//range = new SemanticVersionRange((SemanticVersion)o);
-			range = new VersionRange(operator, (SemanticVersion)o);
+			switch (operator) {
+			case "~>":
+				// Special case for "pessimistic" range, see
+				// https://www.devalot.com/articles/2012/04/gem-versions.html
+				SemanticVersion sv = (SemanticVersion)o;
+				VersionRange from = new VersionRange(">=", sv);
+				VersionRange to = new VersionRange("<", sv.getNextParentVersion());
+				range = new AndRange(from, to);
+				break;
+			default:
+				range = new VersionRange(operator, (SemanticVersion)o);
+				break;
+			}
 			stack.push(range);
 		}
 		else

@@ -22,6 +22,7 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 	{
 		head = Version.forIntegers(major, minor, patch);
 		tail = new SemanticVersion(build);
+		significantDigits = 4;
 	}
 
 	@Override
@@ -197,5 +198,44 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public SemanticVersion getNextVersion() {
+		int major = head.getMajorVersion();
+		int minor = head.getMinorVersion();
+		int patch = head.getPatchVersion();
+		int build = tail.getMajor();
+		return new ExtendedSemanticVersion(major, minor, patch, build + 1);
+	}
+	
+	@Override
+	public SemanticVersion getNextParentVersion() {
+		int major = head.getMajorVersion();
+		int minor = head.getMinorVersion();
+		int patch = head.getPatchVersion();
+		int build = tail.getMajor();
+		
+		switch (significantDigits) {
+		case 1:
+			throw new UnsupportedOperationException();
+		case 2:
+			major++;
+			minor = 0;
+			patch = 0;
+			build = 0;
+			return new ExtendedSemanticVersion(major, minor, patch, build);
+		case 3:
+			minor++;
+			patch = 0;
+			build = 0;
+			return new ExtendedSemanticVersion(major, minor, patch, build);
+		case 4:
+			patch++;
+			build = 0;
+			return new ExtendedSemanticVersion(major, minor, patch, build);
+		default:
+			throw new UnsupportedOperationException();
+		}
 	}
 }
