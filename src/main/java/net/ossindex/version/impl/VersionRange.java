@@ -307,4 +307,25 @@ public class VersionRange extends AbstractCommonRange
 			return false;
 		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.AbstractCommonRange#invert()
+	 */
+	@Override
+	public IVersionRange invert() {
+		switch (operator) {
+		case ">":
+			return new VersionRange("<=", version);
+		case ">=":
+			return new VersionRange("<", version);
+		case "<":
+			return new VersionRange(">=", version);
+		case "<=":
+			return new VersionRange(">", version);
+		default:
+			throw new UnsupportedOperationException();
+		}
+	}
+
 }

@@ -27,6 +27,7 @@
 package net.ossindex.version.impl;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -52,6 +53,10 @@ public class OrRange extends AbstractCommonRange
 	{
 		ranges.add(range1);
 		ranges.add(range2);
+	}
+
+	public OrRange(List<IVersionRange> results) {
+		ranges.addAll(results);
 	}
 
 	/*
@@ -208,5 +213,32 @@ public class OrRange extends AbstractCommonRange
 	public OrRange add(IVersionRange range) {
 		ranges.add(range);
 		return this;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.AbstractCommonRange#invert()
+	 */
+	@Override
+	public IVersionRange invert() {
+		if (ranges.size() == 2) {
+			IVersionRange irange1 = ranges.first().invert();
+			IVersionRange irange2 = ranges.last().invert();
+			return new AndRange(irange1, irange2);
+		}
+		
+		throw new UnsupportedOperationException();
+	}
+
+	public int size() {
+		return ranges.size();
+	}
+
+	public IVersionRange first() {
+		return ranges.first();
+	}
+
+	public IVersionRange last() {
+		return ranges.last();
 	}
 }

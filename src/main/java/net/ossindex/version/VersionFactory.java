@@ -31,15 +31,19 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.EmptyStackException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import net.ossindex.version.impl.AndRange;
 import net.ossindex.version.impl.NamedVersion;
 import net.ossindex.version.impl.OrRange;
 import net.ossindex.version.impl.VersionErrorListener;
 import net.ossindex.version.impl.VersionListener;
+import net.ossindex.version.impl.VersionRange;
 import net.ossindex.version.impl.VersionSet;
 import net.ossindex.version.parser.VersionLexer;
 import net.ossindex.version.parser.VersionParser;
@@ -190,5 +194,92 @@ public class VersionFactory
 	public static boolean isMavenRange(String vstring) {
 		IVersionRange range = VersionFactory.getRange(vstring);
 		return "maven".equals(range.getType());
+	}
+
+	/**
+	 * Given two "or" ranges or "simple" ranges, merge them together. We are
+	 * assuming that the ranges are provided in order for now.
+	 * 
+	 * For example:
+	 * 
+	 *   >1.0.0 merged with (<2.0.0 | >3.0.0) will become (>1.0.0 <2.0.0 | >3.0.0)
+	 */
+	public static IVersionRange merge(IVersionRange... ranges) {
+		if (ranges.length < 2) {
+			return ranges[0];
+		}
+		
+		// Check the type of the first range
+		if (!(ranges[0] instanceof VersionRange)) {
+			if (!(ranges[0] instanceof OrRange)) {
+				throw new UnsupportedOperationException("Incorrect type for ranges[0]");
+			}
+			if (((OrRange)ranges[0]).size() != 2) {
+				throw new UnsupportedOperationException("Incorrect size for ranges[0]");
+			}
+		} else {
+			if (!((VersionRange)ranges[0]).isUnbounded()) {
+				throw new UnsupportedOperationException("ranges[0] should be unbounded (> or >=)");
+			}
+		}
+		
+		int lastIndex = ranges.length - 1;
+		
+		// Check the type of the last range
+		if (!(ranges[lastIndex] instanceof VersionRange)) {
+			if (!(ranges[lastIndex] instanceof OrRange)) {
+				throw new UnsupportedOperationException("Incorrect type for ranges[last]");
+			}
+			if (((OrRange)ranges[lastIndex]).size() != 2) {
+				throw new UnsupportedOperationException("Incorrect size for ranges[last]");
+			}
+		} else {
+			if (((VersionRange)ranges[lastIndex]).isUnbounded()) {
+				throw new UnsupportedOperationException("ranges[0] should be bounded (< or <=)");
+			}
+		}
+		
+		// Check the rest of the types
+		for (int i = 1; i < lastIndex; i++) {
+			if (!(ranges[i] instanceof OrRange)) {
+				throw new UnsupportedOperationException("Incorrect type for ranges[" + i + "]");
+			}
+			
+			if (((OrRange)ranges[i]).size() != 2) {
+				throw new UnsupportedOperationException("Incorrect size for ranges[" + i + "]");
+			}
+		}
+		
+		List<IVersionRange> results = new LinkedList<IVersionRange>();
+		IVersionRange last = null;
+		for (int i = 0; i < ranges.length; i++) {
+			IVersionRange range = ranges[i];
+			if (last == null) {
+				if (range instanceof VersionRange) {
+					last = range;
+				} else {
+					OrRange orange = (OrRange)range;
+					results.add(orange.first());
+					last = orange.last();
+				}
+			} else {
+				if (range instanceof VersionRange) {
+					AndRange arange = new AndRange(last, range);
+					results.add(arange);
+					last = null;
+				} else {
+					OrRange orange = (OrRange)range;
+					AndRange arange = new AndRange(last, orange.first());
+					results.add(arange);
+					last = orange.last();
+				}
+			}
+		}
+		
+		if (last != null) {
+			results.add(last);
+		}
+		
+		return new OrRange(results);
 	}
 }

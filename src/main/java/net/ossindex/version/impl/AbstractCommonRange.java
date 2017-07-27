@@ -16,4 +16,9 @@ public abstract class AbstractCommonRange implements IVersionRange {
 	public boolean contains(IVersionRange trange) {
 		return false;
 	}
+	
+	@Override
+	public IVersionRange invert() {
+		throw new UnsupportedOperationException();
+	}
 }

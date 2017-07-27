@@ -99,4 +99,9 @@ public interface IVersionRange extends Comparable<IVersionRange>
 	public abstract void setHasErrors(boolean b);
 	
 	public abstract boolean hasErrors();
+
+	/**
+	 * Generate a range that is the inverse of the provided range
+	 */
+	public abstract IVersionRange invert();
 }

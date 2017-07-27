@@ -237,4 +237,15 @@ public class AndRange extends AbstractCommonRange
 		}
 		return sb.toString();
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see net.ossindex.version.impl.AbstractCommonRange#invert()
+	 */
+	@Override
+	public IVersionRange invert() {
+		IVersionRange irange1 = range1.invert();
+		IVersionRange irange2 = range2.invert();
+		return new OrRange(irange1, irange2);
+	}
 }
