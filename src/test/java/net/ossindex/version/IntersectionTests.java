@@ -55,5 +55,15 @@ public class IntersectionTests
 		IVersionRange range2 = VersionFactory.getRange("(>1.4 & <1.9) | (>2.4 & <2.9)");
 		assertTrue(range1.intersects(range2));
 	}
+	
+	@Test
+	public void testOverlappingSimpleRanges2()
+	{
+		IVersionRange range1 = VersionFactory.getRange(">=4.2.5");
+		IVersionRange range2 = VersionFactory.getRange(">=4.2.5.1");
+		IVersion version2 = VersionFactory.getVersion(">=4.2.5.1");
+		assertTrue(range1.contains(version2));
+		assertTrue(range1.intersects(range2));
+	}
 
 }

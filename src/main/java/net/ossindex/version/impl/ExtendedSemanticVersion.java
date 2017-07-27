@@ -192,8 +192,7 @@ public class ExtendedSemanticVersion extends SemanticVersion {
 		if (version instanceof ExtendedSemanticVersion) {
 			return tail.greaterThanOrEqualTo(((ExtendedSemanticVersion)version).tail);
 		} else {
-			// Equals is still possible
-			if (tail.getMajor() == 0) {
+			if (tail.getMajor() >= 0) {
 				return true;
 			}
 		}

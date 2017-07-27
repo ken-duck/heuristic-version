@@ -87,6 +87,18 @@ public class AndRange extends AbstractCommonRange
 				this.range1 = range1;
 				this.range2 = range2;
 			}
+		} else if ((range1 instanceof AndRange) && ((AndRange)range1).isBounded && (range2 instanceof VersionRange)) {
+			// Special case where a bounded range is reduced by another simple range
+			// We already know they intersect. We just replace one end with the other.
+			AndRange arange = (AndRange)range1;
+			VersionRange boundingRange = (VersionRange)range2;
+			if (boundingRange.isUnbounded()) {
+				this.range2 = arange.last();
+				this.range1 = boundingRange;
+			} else {
+				this.range1 = arange.first();
+				this.range2 = boundingRange;
+			}
 		} else {
 			// I honestly doubt we will run into situations like this, so I don't really
 			// care on order for now.
@@ -247,5 +259,14 @@ public class AndRange extends AbstractCommonRange
 		IVersionRange irange1 = range1.invert();
 		IVersionRange irange2 = range2.invert();
 		return new OrRange(irange1, irange2);
+	}
+	
+
+	public IVersionRange first() {
+		return range1;
+	}
+
+	public IVersionRange last() {
+		return range2;
 	}
 }
