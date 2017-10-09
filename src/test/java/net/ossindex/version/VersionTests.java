@@ -264,13 +264,16 @@ public class VersionTests
 		assertNotNull(range);
 		assertEquals("4.3.2", range.toString());
 	}
-	
+
+	/**
+	 * Due to limitations in some underlying libraries, underscores are replaced with hyphens.
+	 */
 	@Test
 	public void testUnderscoreVersion() throws IOException
 	{
 		IVersionRange range = parseVersion("= 4.3.2.Final_Score");
 		assertNotNull(range);
-		assertEquals("4.3.2-Final_Score", range.toString());
+		assertEquals("4.3.2-Final-Score", range.toString());
 	}
 
 	/** Common test code

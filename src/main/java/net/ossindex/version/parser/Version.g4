@@ -174,6 +174,7 @@ identifier
 any
 	: ANY
 	| '-'
+	| '_'
 	| '.'
 	| NUMBER
 	;
@@ -198,5 +199,5 @@ ANY
 	;
 
 WS
-	: (' ' | '\t' | '\\n' | ' ') -> channel(HIDDEN)
+	: (' ' | '\t' | '\n' | '\r') -> channel(HIDDEN)
 	;

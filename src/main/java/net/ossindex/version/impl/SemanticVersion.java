@@ -59,6 +59,8 @@ public class SemanticVersion implements Comparable<IVersion>, IVersion
 	 */
 	public SemanticVersion(String buf)
 	{
+		// Sadly, the external library cannot handle some characters, so we do a replacement to be as close as possible
+		buf = buf.replace('_', '-');
 		setVersion(buf);
 	}
 	
