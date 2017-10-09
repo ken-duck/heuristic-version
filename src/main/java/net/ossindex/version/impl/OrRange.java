@@ -49,8 +49,6 @@ public class OrRange
 
   /**
    *
-   * @param operator
-   * @param version
    */
   public OrRange(IVersionRange range1, IVersionRange range2)
   {
@@ -127,7 +125,20 @@ public class OrRange
   @Override
   public IVersion getMaximum()
   {
-    throw new UnsupportedOperationException();
+    Iterator<IVersionRange> it = ranges.iterator();
+    IVersionRange r1 = it.next();
+    IVersion max = r1.getMaximum();
+
+    while (it.hasNext()) {
+      IVersionRange r2 = it.next();
+      IVersion v2 = r2.getMinimum();
+      int cmp = max.compareTo(v2);
+      if (cmp > 0) {
+        return max = v2;
+      }
+    }
+
+    return max;
   }
 
   public String getOperator()
