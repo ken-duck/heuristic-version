@@ -440,4 +440,12 @@ public class ContainsTests
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));
   }
 
+  @Test
+  public void testOpenEndedContainsClosed()
+  {
+    IVersionRange range1 = VersionFactory.getRange("<1.10.10");
+    assertNotNull(range1);
+    IVersionRange range2 = VersionFactory.getRange(">=1.10.1 <1.10.10");
+    assertTrue(range1.contains(range2));
+  }
 }

@@ -275,6 +275,30 @@ public class SemanticVersion
   }
 
   /**
+   * Get the prev logical version in line. For example:
+   *
+   *   1.2.3 becomes 1.2.2
+   *
+   * This gets ugly if we underflow, cause we don't know what the top patch version
+   * for the lower minor version could be.
+   */
+  public SemanticVersion getPrevVersion() {
+    int major = head.getMajorVersion();
+    int minor = head.getMinorVersion();
+    int patch = head.getPatchVersion();
+    if (patch > 0) {
+      return new SemanticVersion(major, minor, patch - 1);
+    }
+    if (minor > 0) {
+      return new SemanticVersion(major, minor - 1, 999);
+    }
+    if (major > 0) {
+      return new SemanticVersion(major - 1, 999, 999);
+    }
+    return new SemanticVersion(0, 0, 0);
+  }
+
+  /**
    * Strip the lowest number and increment the next one up. For example:
    *
    *   1.2.3 becomes 1.3.0

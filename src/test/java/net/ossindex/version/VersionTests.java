@@ -265,7 +265,7 @@ public class VersionTests
   }
 
   /**
-   * Due to limitations in some underlying libraries, underscores are replaced with hyphens.
+   * Due to limitations in some underlying libraries, underscores are replaced with hyphens.>=1.10.1 <1.10.10
    */
   @Test
   public void testUnderscoreVersion() throws IOException

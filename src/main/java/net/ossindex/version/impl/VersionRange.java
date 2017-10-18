@@ -159,9 +159,11 @@ public class VersionRange
   {
     switch (operator) {
       case "<":
+        return version.getPrevVersion();
       case "<=":
         return version;
       case ">":
+        return version.getNextVersion();
       case ">=":
         return null;
       default:
