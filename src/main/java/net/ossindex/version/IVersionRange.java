@@ -105,4 +105,9 @@ public interface IVersionRange
    * Generate a range that is the inverse of the provided range
    */
   public abstract IVersionRange invert();
+
+  /**
+   * Returns version range in maven syntax
+   */
+  public abstract String toMavenString();
 }

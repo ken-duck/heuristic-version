@@ -148,6 +148,20 @@ public class BoundedVersionRange
     throw new UnsupportedOperationException("Cannot get string for range");
   }
 
+  @Override
+  public String toMavenString()
+  {
+    if (range != null) {
+      return "[" + minimum + "," + maximum + "]";
+    }
+    if (minimum != null) {
+      if (maximum == null) {
+        return minimum.toString();
+      }
+    }
+    throw new UnsupportedOperationException("Cannot get maven string for range");
+  }
+
   /*
    * (non-Javadoc)
    * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)

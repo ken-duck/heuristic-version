@@ -263,6 +263,18 @@ public class AndRange
     return sb.toString();
   }
 
+  @Override
+  public String toMavenString()
+  {
+    StringBuilder sb = new StringBuilder();
+
+
+      sb.append(range1.toMavenString());
+
+      sb.append(range2.toMavenString());
+    return sb.toString().replace(",)(,",",");
+  }
+
   /*
    * (non-Javadoc)
    * @see net.ossindex.version.impl.AbstractCommonRange#invert()

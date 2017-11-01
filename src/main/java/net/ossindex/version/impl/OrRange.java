@@ -224,6 +224,21 @@ public class OrRange
     return sb.toString();
   }
 
+  @Override
+  public String toMavenString()
+  {
+    StringBuilder sb = new StringBuilder();
+    Iterator<IVersionRange> it = ranges.iterator();
+    while (it.hasNext()) {
+      IVersionRange range = it.next();
+      sb.append(range.toMavenString());
+      if (it.hasNext()) {
+        sb.append(",");
+      }
+    }
+    return sb.toString();
+  }
+
   public OrRange add(IVersionRange range) {
     ranges.add(range);
     return this;
