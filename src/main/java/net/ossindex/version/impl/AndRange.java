@@ -267,11 +267,8 @@ public class AndRange
   public String toMavenString()
   {
     StringBuilder sb = new StringBuilder();
-
-
-      sb.append(range1.toMavenString());
-
-      sb.append(range2.toMavenString());
+    sb.append(range1.toMavenString());
+    sb.append(range2.toMavenString());
     return sb.toString().replace(",)(,",",");
   }
 
