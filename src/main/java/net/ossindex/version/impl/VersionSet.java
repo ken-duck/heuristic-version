@@ -135,7 +135,7 @@ public class VersionSet
     StringBuffer sb = new StringBuffer();
     for (Iterator<IVersion> it = set.iterator(); it.hasNext(); ) {
       IVersion version = it.next();
-      sb.append(version);
+      sb.append("[" + version + "]");
       if (it.hasNext()) {
         sb.append(",");
       }
