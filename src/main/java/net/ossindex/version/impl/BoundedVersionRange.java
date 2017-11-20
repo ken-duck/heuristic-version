@@ -156,7 +156,7 @@ public class BoundedVersionRange
     }
     if (minimum != null) {
       if (maximum == null) {
-        return minimum.toString();
+        return "[" + minimum.toString() + "]";
       }
     }
     throw new UnsupportedOperationException("Cannot get maven string for range");
