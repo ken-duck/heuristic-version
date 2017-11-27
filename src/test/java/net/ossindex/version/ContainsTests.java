@@ -22,6 +22,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5");
     assertNotNull(range);
     assertEquals("<1.2.5", range.toString());
+    assertEquals("(,1.2.5)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.4")));
   }
 
@@ -31,6 +32,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<=1.2.5");
     assertNotNull(range);
     assertEquals("<=1.2.5", range.toString());
+    assertEquals("(,1.2.5]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -40,6 +42,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5");
     assertNotNull(range);
     assertEquals(">1.2.5", range.toString());
+    assertEquals("(1.2.5,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("2.2.6")));
   }
 
@@ -49,6 +52,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">=1.2.5");
     assertNotNull(range);
     assertEquals(">=1.2.5", range.toString());
+    assertEquals("[1.2.5,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -59,6 +63,7 @@ public class ContainsTests
     assertNotNull(range);
     assertTrue(range instanceof VersionSet);
     assertEquals("1.2.5", range.toString());
+    assertEquals("[1.2.5]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -69,6 +74,7 @@ public class ContainsTests
     assertNotNull(range);
     assertTrue(range instanceof VersionSet);
     assertEquals("1.2.5,1.2.6,1.2.8", range.toString());
+    assertEquals("[1.2.5],[1.2.6],[1.2.8]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
   }
 
@@ -78,6 +84,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5 & <1.3");
     assertNotNull(range);
     assertEquals(">1.2.5 <1.3.0", range.toString());
+    assertEquals("(1.2.5,1.3.0)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
   }
 
@@ -90,6 +97,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5 <1.3");
     assertNotNull(range);
     assertEquals(">1.2.5 <1.3.0", range.toString());
+    assertEquals("(1.2.5,1.3.0)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
   }
 
@@ -99,6 +107,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5 | >1.3");
     assertNotNull(range);
     assertEquals("<1.2.5 | >1.3.0", range.toString());
+    assertEquals("(,1.2.5),(1.3.0,)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5")));
     assertFalse(range.contains(VersionFactory.getVersion("1.3.0")));
     assertFalse(range.contains(VersionFactory.getVersion("1.2.6")));
@@ -113,6 +122,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("(>1.2.5 & <1.3)");
     assertNotNull(range);
     assertEquals(">1.2.5 <1.3.0", range.toString());
+    assertEquals("(1.2.5,1.3.0)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
     assertTrue(range.contains(VersionFactory.getVersion("1.2.9")));
     assertTrue(range.contains(VersionFactory.getVersion("1.2.99")));
@@ -126,6 +136,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("(>1.2.5 & <1.3) | (>2.2.5 & <2.3)");
     assertNotNull(range);
     assertEquals(">1.2.5 <1.3.0 | >2.2.5 <2.3.0", range.toString());
+    assertEquals("(1.2.5,1.3.0),(2.2.5,2.3.0)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.6")));
     assertTrue(range.contains(VersionFactory.getVersion("2.2.6")));
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5")));
@@ -139,6 +150,7 @@ public class ContainsTests
   public void testComplexRangeClause()
   {
     IVersionRange range = VersionFactory.getRange(">=3.1.0 <3.1.4 ");
+    assertEquals("[3.1.0,3.1.4)", range.toMavenString());
     assertNotNull(range);
     assertTrue(range.contains(VersionFactory.getVersion("3.1.3")));
   }
@@ -147,6 +159,7 @@ public class ContainsTests
   public void testComplexRangeSinglePipeWithBrackets()
   {
     IVersionRange range = VersionFactory.getRange("(>=3.0.0 <3.0.4) | (>=3.1.0 <3.1.4)");
+    assertEquals("[3.0.0,3.0.4),[3.1.0,3.1.4)", range.toMavenString());
     assertNotNull(range);
     assertTrue(range.contains(VersionFactory.getVersion("3.1.3")));
   }
@@ -155,6 +168,7 @@ public class ContainsTests
   public void testComplexRangeSinglePipe()
   {
     IVersionRange range = VersionFactory.getRange(">=3.0.0 <3.0.4 | >=3.1.0 <3.1.4");
+    assertEquals("[3.0.0,3.0.4),[3.1.0,3.1.4)", range.toMavenString());
     assertNotNull(range);
     assertTrue(range.contains(VersionFactory.getVersion("3.1.3")));
   }
@@ -163,6 +177,7 @@ public class ContainsTests
   public void testComplexRangeDoublePipe()
   {
     IVersionRange range = VersionFactory.getRange(">=3.0.0 <3.0.4 || >=3.1.0 <3.1.4 ");
+    assertEquals("[3.0.0,3.0.4),[3.1.0,3.1.4)", range.toMavenString());
     assertNotNull(range);
     assertTrue(range.contains(VersionFactory.getVersion("3.1.3")));
   }
@@ -173,6 +188,7 @@ public class ContainsTests
   {
     IVersionRange range = VersionFactory.getRange("<2.8.9 || >=3.0.0 <3.0.4 || >=3.1.0 <3.1.4 ");
     assertNotNull(range);
+    assertEquals("(,2.8.9),[3.0.0,3.0.4),[3.1.0,3.1.4)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("3.0.0")));
     assertTrue(range.contains(VersionFactory.getVersion("3.1.0")));
     assertTrue(range.contains(VersionFactory.getVersion("3.1.3")));
@@ -189,6 +205,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
     assertNotNull(range);
     assertEquals("<1.2.5-rc5", range.toString());
+    assertEquals("(,1.2.5-rc5)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.4")));
   }
 
@@ -199,6 +216,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
     assertNotNull(range);
     assertEquals("<1.2.5-rc5", range.toString());
+    assertEquals("(,1.2.5-rc5)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5-rc4")));
   }
 
@@ -208,6 +226,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
     assertNotNull(range);
     assertEquals("<1.2.5-rc5", range.toString());
+    assertEquals("(,1.2.5-rc5)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.6")));
   }
 
@@ -218,6 +237,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5-rc5");
     assertNotNull(range);
     assertEquals("<1.2.5-rc5", range.toString());
+    assertEquals("(,1.2.5-rc5)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5-rc6")));
   }
 
@@ -227,6 +247,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5.6");
     assertNotNull(range);
     assertEquals("<1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.5")));
   }
 
@@ -236,6 +257,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5.6");
     assertNotNull(range);
     assertEquals("<1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -245,6 +267,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5.6");
     assertNotNull(range);
     assertEquals("<1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.4.6")));
   }
 
@@ -254,6 +277,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<=1.2.5.0");
     assertNotNull(range);
     assertEquals("<=1.2.5.0", range.toString());
+    assertEquals("(,1.2.5.0]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -263,6 +287,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<=1.2.5.6");
     assertNotNull(range);
     assertEquals("<=1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.5")));
   }
 
@@ -272,6 +297,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<=1.2.5.6");
     assertNotNull(range);
     assertEquals("<=1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.6")));
   }
 
@@ -281,6 +307,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5.6");
     assertNotNull(range);
     assertEquals("<1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5.7")));
   }
 
@@ -290,6 +317,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.2.5.6");
     assertNotNull(range);
     assertEquals("<1.2.5.6", range.toString());
+    assertEquals("(,1.2.5.6)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5.6")));
   }
 
@@ -299,6 +327,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5.6");
     assertNotNull(range);
     assertEquals(">1.2.5.6", range.toString());
+    assertEquals("(1.2.5.6,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
   }
 
@@ -308,6 +337,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5.6");
     assertNotNull(range);
     assertEquals(">1.2.5.6", range.toString());
+    assertEquals("(1.2.5.6,)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -317,6 +347,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5.6");
     assertNotNull(range);
     assertEquals(">1.2.5.6", range.toString());
+    assertEquals("(1.2.5.6,)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.4.6")));
   }
 
@@ -326,6 +357,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">=1.2.5.0");
     assertNotNull(range);
     assertEquals(">=1.2.5.0", range.toString());
+    assertEquals("[1.2.5.0,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5")));
   }
 
@@ -335,6 +367,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">=1.2.5.6");
     assertNotNull(range);
     assertEquals(">=1.2.5.6", range.toString());
+    assertEquals("[1.2.5.6,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
   }
 
@@ -344,6 +377,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">=1.2.5.6");
     assertNotNull(range);
     assertEquals(">=1.2.5.6", range.toString());
+    assertEquals("[1.2.5.6,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.6")));
   }
 
@@ -353,6 +387,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5.6");
     assertNotNull(range);
     assertEquals(">1.2.5.6", range.toString());
+    assertEquals("(1.2.5.6,)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("1.2.5.5")));
   }
 
@@ -362,6 +397,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">1.2.5.6");
     assertNotNull(range);
     assertEquals(">1.2.5.6", range.toString());
+    assertEquals("(1.2.5.6,)", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("1.2.5.7")));
   }
 
@@ -371,6 +407,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<1.8.0.9");
     assertNotNull(range);
     assertEquals("<1.8.0.9", range.toString());
+    assertEquals("(,1.8.0.9)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("2.3.2")));
   }
 
@@ -382,6 +419,7 @@ public class ContainsTests
         .getRange(">=2.5.0 <=2.5.6 || 2.5.6.SEC01 || 2.5.6.SEC02 || 2.5.7 || >=3.0.0 <3.0.3");
     assertNotNull(range);
     assertEquals(">=2.5.0 <=2.5.6 | 2.5.6-SEC01 | 2.5.6-SEC02 | 2.5.7 | >=3.0.0 <3.0.3", range.toString());
+    assertEquals("[2.5.0,2.5.6],[2.5.6-SEC01],[2.5.6-SEC02],[2.5.7],[3.0.0,3.0.3)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("4.3.7.RELEASE")));
   }
 
@@ -391,6 +429,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange(">=4.1.0 <4.2.1 || >=4.3.0 <4.3.2 || >=5.0.0 <5.1.2");
     assertNotNull(range);
     assertEquals(">=4.1.0 <4.2.1 | >=4.3.0 <4.3.2 | >=5.0.0 <5.1.2", range.toString());
+    assertEquals("[4.1.0,4.2.1),[4.3.0,4.3.2),[5.0.0,5.1.2)", range.toMavenString());
     assertFalse(range.contains(VersionFactory.getVersion("4.3.2")));
     assertFalse(range.contains(VersionFactory.getVersion("4.3.2.Final")));
     assertFalse(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));
@@ -402,6 +441,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("4.3.2");
     assertNotNull(range);
     assertEquals("4.3.2", range.toString());
+    assertEquals("[4.3.2]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.Final")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));
@@ -413,6 +453,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("<=4.3.2");
     assertNotNull(range);
     assertEquals("<=4.3.2", range.toString());
+    assertEquals("(,4.3.2]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.Final")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));
@@ -424,6 +465,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("4.3.2-Final");
     assertNotNull(range);
     assertEquals("4.3.2", range.toString());
+    assertEquals("[4.3.2]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.Final")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));
@@ -435,6 +477,7 @@ public class ContainsTests
     IVersionRange range = VersionFactory.getRange("4.3.2-Final | 4.3.1-GA");
     assertNotNull(range);
     assertEquals("4.3.1 | 4.3.2", range.toString());
+    assertEquals("[4.3.1],[4.3.2]", range.toMavenString());
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.Final")));
     assertTrue(range.contains(VersionFactory.getVersion("4.3.2.RELEASE")));

@@ -129,6 +129,20 @@ public class VersionSet
     return sb.toString();
   }
 
+  @Override
+  public String toMavenString()
+  {
+    StringBuffer sb = new StringBuffer();
+    for (Iterator<IVersion> it = set.iterator(); it.hasNext(); ) {
+      IVersion version = it.next();
+      sb.append("[" + version + "]");
+      if (it.hasNext()) {
+        sb.append(",");
+      }
+    }
+    return sb.toString();
+  }
+
   /** Add another version to the set
    *
    * @param version

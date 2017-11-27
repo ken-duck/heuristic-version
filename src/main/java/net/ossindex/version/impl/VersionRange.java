@@ -28,6 +28,7 @@ package net.ossindex.version.impl;
 
 import java.util.Collection;
 
+import com.sun.javafx.binding.StringFormatter;
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
 
@@ -181,6 +182,35 @@ public class VersionRange
     return operator + version;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see net.ossindex.version.impl.IVersionRange#toMavenString()
+   */
+  @Override
+  public String toMavenString()
+  {
+    String mavenString = "";
+    switch (operator) {
+      case "<=":
+        mavenString = "(,%s]";
+        break;
+      case "<":
+        mavenString = "(,%s)";
+        break;
+      case "==":
+        mavenString = "[%s]";
+        break;
+      case ">=":
+        mavenString = "[%s,)";
+        break;
+      case ">":
+        mavenString = "(%s,)";
+        break;
+      default:
+       toString();
+    }
+    return String.format(mavenString, version);
+  }
   /*
    * (non-Javadoc)
    * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)
