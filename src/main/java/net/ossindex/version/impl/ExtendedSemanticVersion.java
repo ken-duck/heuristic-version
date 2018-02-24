@@ -16,6 +16,8 @@ public class ExtendedSemanticVersion
    */
   private SemanticVersion tail;
 
+  private String postfix;
+
   /**
    * Dirty hack for four digit builds
    */
@@ -23,6 +25,17 @@ public class ExtendedSemanticVersion
   {
     head = Version.forIntegers(major, minor, patch);
     tail = new SemanticVersion(build);
+    significantDigits = 4;
+  }
+
+  /**
+   * Dirty hack for four digit builds
+   */
+  protected ExtendedSemanticVersion(int major, int minor, int patch, int build, String postfix)
+  {
+    head = Version.forIntegers(major, minor, patch);
+    tail = new SemanticVersion(build);
+    this.postfix = postfix;
     significantDigits = 4;
   }
 
@@ -93,6 +106,8 @@ public class ExtendedSemanticVersion
       // Fall back to simple string comparison
       return toString().compareTo(other.toString());
     }
+
+    // FIXME: We don't compare postfix yet
   }
 
   /*
@@ -104,6 +119,9 @@ public class ExtendedSemanticVersion
   {
     // Currently we only support a single extra digit for extended semver,
     // we will have to support more soon.
+    if (postfix != null) {
+      return head.toString() + "." + tail.getMajor() + "-" + postfix;
+    }
     return head.toString() + "." + tail.getMajor();
   }
 
@@ -124,6 +142,8 @@ public class ExtendedSemanticVersion
     if (version instanceof ExtendedSemanticVersion) {
       return tail.lessThan(((ExtendedSemanticVersion) version).tail);
     }
+
+    // FIXME: We don't compare postfix yet
 
     return false;
   }
@@ -152,6 +172,8 @@ public class ExtendedSemanticVersion
         return true;
       }
     }
+
+    // FIXME: We don't compare postfix yet
     return false;
   }
 

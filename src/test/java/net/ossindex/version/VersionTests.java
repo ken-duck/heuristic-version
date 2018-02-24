@@ -308,6 +308,34 @@ public class VersionTests
     assertEquals("0.0.0-111111111111", range.toString());
   }
 
+  @Test
+  public void testDebVersion() throws IOException {
+    IVersionRange range = parseVersion("0.2.4.23-1~deb7u1");
+    assertNotNull(range);
+    assertEquals("0.2.4.23-1~deb7u1", range.toString());
+  }
+
+  @Test
+  public void testColonVersion() throws IOException {
+    IVersionRange range = parseVersion("<1:1.0.5-1");
+    assertNotNull(range);
+    assertEquals("<1.0.5-1", range.toString());
+
+    range = parseVersion("<2:12.0.0-1");
+    assertNotNull(range);
+    assertEquals("<12.0.0-1", range.toString());
+
+    range = parseVersion("<1:1.8.7+dfsg-1+deb8u1");
+    assertNotNull(range);
+    assertEquals("<1.8.7+dfsg-1+deb8u1", range.toString());
+
+    range = parseVersion("1:4.6.0-4.6.1-pre1-2");
+    assertNotNull(range);
+    assertEquals("4.6.0-4.6.1-pre1-2", range.toString());
+  }
+
+
+
   /** Common test code
    *
    * @param vstring

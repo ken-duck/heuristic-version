@@ -139,7 +139,10 @@ prefixed_version
  * though they may not strictly match. Close enough to handle in this one place.
  */
 postfix_version
-	: NUMBER '.' NUMBER '.' NUMBER identifier
+	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER identifier
+	| NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.' identifier
+	| NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '-' identifier
+	| NUMBER '.' NUMBER '.' NUMBER identifier
 	| NUMBER '.' NUMBER '.' NUMBER '.' identifier
 	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
 	| NUMBER '.' NUMBER identifier
@@ -176,6 +179,7 @@ any
 	| '-'
 	| '_'
 	| '.'
+	| '~'
 	| NUMBER
 	;
 

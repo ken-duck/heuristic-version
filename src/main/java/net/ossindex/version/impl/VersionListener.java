@@ -191,6 +191,24 @@ public class VersionListener
         }
         break;
       }
+      case 8: {
+        // 0.2.4.23-1-deb7u1
+        int major = Integer.parseInt(ctx.getChild(0).getText());
+        int minor = Integer.parseInt(ctx.getChild(2).getText());
+        int patch = Integer.parseInt(ctx.getChild(4).getText());
+        int build = Integer.parseInt(ctx.getChild(6).getText());
+        version = new ExtendedSemanticVersion(major, minor, patch, build, ctx.getChild(7).getText());
+        break;
+      }
+      case 9: {
+        // 0.2.4.23-1-deb7u1
+        int major = Integer.parseInt(ctx.getChild(0).getText());
+        int minor = Integer.parseInt(ctx.getChild(2).getText());
+        int patch = Integer.parseInt(ctx.getChild(4).getText());
+        int build = Integer.parseInt(ctx.getChild(6).getText());
+        version = new ExtendedSemanticVersion(major, minor, patch, build, ctx.getChild(8).getText());
+        break;
+      }
     }
     stack.push(version);
   }
