@@ -27,6 +27,7 @@
 package net.ossindex.version.impl;
 
 import java.util.Stack;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.ossindex.version.IVersion;
@@ -45,6 +46,7 @@ import net.ossindex.version.parser.VersionParser;
 public class VersionListener
     extends VersionBaseListener
 {
+  private static final Pattern numericHasLeadingZeroes = Pattern.compile(("^0+([0-9]*)$"));
   private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
 
   private Stack<Object> stack = new Stack<Object>();
@@ -104,6 +106,25 @@ public class VersionListener
     stack.push(version);
   }
 
+  /**
+   * Normalize the postfix to something that semantic version can handle
+   */
+  @Override
+  public void exitIdentifier(VersionParser.IdentifierContext ctx) {
+    String postfix = ctx.getText();
+    // A numeric postfix cannot have leading zeroes
+    // FIXME: Check to see if an alphanumeric postfix with leading zeroes counts
+    Matcher m = numericHasLeadingZeroes.matcher(postfix);
+    if (m.find()) {
+      postfix = m.group(1);
+    }
+    // Hack to ensure correct parsing by SemanticVersion code. A postfix MUST start with a dash, digit, or letter
+    while (!startsWithDigitLetterOrHyphen.matcher(postfix).find()) {
+      postfix = postfix.substring(1);
+    }
+    stack.push(postfix);
+  }
+
   /** Simple semantic version
    *
    */
@@ -113,10 +134,10 @@ public class VersionListener
     SemanticVersion version = null;
 
     int count = ctx.getChildCount();
+    String postfix = (String)stack.pop();
     switch (count) {
       case 4: {
         //1.2.3alpha
-        String postfix = ctx.getChild(3).getText();
         switch (postfix.toUpperCase()) {
           case "RELEASE":
           case "FINAL":
@@ -130,7 +151,7 @@ public class VersionListener
                 ctx.getChild(0).getText() + "."
                     + ctx.getChild(2).getText() + "."
                     + "0" + "-"
-                    + ctx.getChild(3).getText());
+                    + postfix);
             break;
         }
         break;
@@ -140,11 +161,10 @@ public class VersionListener
             ctx.getChild(0).getText() + "."
                 + ctx.getChild(2).getText() + "."
                 + "0" + "-"
-                + ctx.getChild(4).getText());
+                + postfix);
         break;
       case 6: {
         //1.2.3alpha
-        String postfix = ctx.getChild(5).getText();
         switch (postfix.toUpperCase()) {
           case "RELEASE":
           case "FINAL":
@@ -155,10 +175,6 @@ public class VersionListener
                     + ctx.getChild(4).getText());
             break;
           default:
-            // Hack to ensure correct parsing by SemanticVersion code. A postfix MUST start with a dash, digit, or letter
-            while (!startsWithDigitLetterOrHyphen.matcher(postfix).find()) {
-              postfix = postfix.substring(1);
-            }
             version = new SemanticVersion(
                 ctx.getChild(0).getText() + "."
                     + ctx.getChild(2).getText() + "."
@@ -171,7 +187,6 @@ public class VersionListener
       case 7: {
         //1.2.3-alpha
         //1.2.3.alpha
-        String postfix = ctx.getChild(6).getText();
         switch (postfix.toUpperCase()) {
           case "RELEASE":
           case "FINAL":
@@ -186,27 +201,19 @@ public class VersionListener
                 ctx.getChild(0).getText() + "."
                     + ctx.getChild(2).getText() + "."
                     + ctx.getChild(4).getText() + "-"
-                    + ctx.getChild(6).getText());
+                    + postfix);
             break;
         }
         break;
       }
-      case 8: {
-        // 0.2.4.23-1-deb7u1
-        int major = Integer.parseInt(ctx.getChild(0).getText());
-        int minor = Integer.parseInt(ctx.getChild(2).getText());
-        int patch = Integer.parseInt(ctx.getChild(4).getText());
-        int build = Integer.parseInt(ctx.getChild(6).getText());
-        version = new ExtendedSemanticVersion(major, minor, patch, build, ctx.getChild(7).getText());
-        break;
-      }
+      case 8:
       case 9: {
         // 0.2.4.23-1-deb7u1
         int major = Integer.parseInt(ctx.getChild(0).getText());
         int minor = Integer.parseInt(ctx.getChild(2).getText());
         int patch = Integer.parseInt(ctx.getChild(4).getText());
         int build = Integer.parseInt(ctx.getChild(6).getText());
-        version = new ExtendedSemanticVersion(major, minor, patch, build, ctx.getChild(8).getText());
+        version = new ExtendedSemanticVersion(major, minor, patch, build, postfix);
         break;
       }
     }
