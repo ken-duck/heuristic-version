@@ -142,9 +142,11 @@ postfix_version
 	: NUMBER '.' NUMBER '.' NUMBER identifier
 	| NUMBER '.' NUMBER '.' NUMBER '.' identifier
 	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
+	| NUMBER '.' NUMBER '.' NUMBER '+' identifier
 	| NUMBER '.' NUMBER identifier
 	| NUMBER '.' NUMBER '.' identifier
 	| NUMBER '.' NUMBER '-' identifier
+	| NUMBER '.' NUMBER '+' identifier
 	;
 
 /** Simple numeric matching. Strip trailing dots if they exist.
@@ -166,7 +168,7 @@ named_version
  * We need special handling of the first character
  */
 identifier
-	: ~(NUMBER | '.' | '-' | '&' | OR | ',') any*?
+	: ~(NUMBER | '.' | '-' | '+' | '&' | OR | ',') any*?
 	;
 
 /** "any" exclusive of comparison operators and such

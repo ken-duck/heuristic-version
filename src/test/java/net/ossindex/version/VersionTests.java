@@ -275,6 +275,31 @@ public class VersionTests
     assertEquals("4.3.2-Final-Score", range.toString());
   }
 
+  @Test
+  public void testPlusVersion() throws IOException {
+    IVersionRange range = parseVersion("10.0.6+7-e2ba6752");
+    assertNotNull(range);
+    assertEquals("10.0.6-7-e2ba6752", range.toString());
+  }
+
+  @Test
+  public void testTimestampSuffixVersion() throws IOException {
+    IVersionRange range = parseVersion("1.7-201002241055");
+    assertNotNull(range);
+    assertEquals("1.7-201002241055", range.toString());
+
+    range = parseVersion("4.0.2-3eab439-20180109215419");
+    assertNotNull(range);
+    assertEquals("4.0.2-3eab439-20180109215419", range.toString());
+  }
+
+  @Test
+  public void testLongVersion() throws IOException {
+    IVersionRange range = parseVersion("0.0.111111111111");
+    assertNotNull(range);
+    assertEquals("0.0.111111111111", range.toString());
+  }
+
   /** Common test code
    *
    * @param vstring

@@ -27,6 +27,7 @@
 package net.ossindex.version.impl;
 
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
@@ -44,6 +45,8 @@ import net.ossindex.version.parser.VersionParser;
 public class VersionListener
     extends VersionBaseListener
 {
+  private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
+
   private Stack<Object> stack = new Stack<Object>();
 
   private IVersionRange range;
@@ -96,7 +99,6 @@ public class VersionListener
 
   /** Simple semantic version
    *
-   * @see net.ossindex.version.parser.VersionBaseListener#exitSemantic_version(net.ossindex.version.parser.VersionParser.Semantic_versionContext)
    */
   @Override
   public void exitPostfix_version(VersionParser.Postfix_versionContext ctx)
@@ -146,11 +148,15 @@ public class VersionListener
                     + ctx.getChild(4).getText());
             break;
           default:
+            // Hack to ensure correct parsing by SemanticVersion code. A postfix MUST start with a dash, digit, or letter
+            while (!startsWithDigitLetterOrHyphen.matcher(postfix).find()) {
+              postfix = postfix.substring(1);
+            }
             version = new SemanticVersion(
                 ctx.getChild(0).getText() + "."
                     + ctx.getChild(2).getText() + "."
                     + ctx.getChild(4).getText() + "-"
-                    + ctx.getChild(5).getText());
+                    + postfix);
             break;
         }
         break;
