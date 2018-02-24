@@ -284,9 +284,17 @@ public class VersionTests
 
   @Test
   public void testTimestampSuffixVersion() throws IOException {
-    IVersionRange range = parseVersion("1.7-201002241055");
+    IVersionRange range = parseVersion("1.7");
     assertNotNull(range);
-    assertEquals("1.7-201002241055", range.toString());
+    assertEquals("1.7.0", range.toString());
+
+    range = parseVersion("1.7-a");
+    assertNotNull(range);
+    assertEquals("1.7.0-a", range.toString());
+
+    range = parseVersion("1.7-201002241055");
+    assertNotNull(range);
+    assertEquals("1.7.0-201002241055", range.toString());
 
     range = parseVersion("4.0.2-3eab439-20180109215419");
     assertNotNull(range);
@@ -297,7 +305,7 @@ public class VersionTests
   public void testLongVersion() throws IOException {
     IVersionRange range = parseVersion("0.0.111111111111");
     assertNotNull(range);
-    assertEquals("0.0.111111111111", range.toString());
+    assertEquals("0.0.0-111111111111", range.toString());
   }
 
   /** Common test code

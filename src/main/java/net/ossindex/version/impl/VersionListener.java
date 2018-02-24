@@ -65,7 +65,8 @@ public class VersionListener
     switch (count) {
       case 1:
       case 2: {
-        int major = Integer.parseInt(ctx.getChild(0).getText());
+        String token = ctx.getChild(0).getText();
+        int major = Integer.parseInt(token);
         version = new SemanticVersion(major);
         break;
       }
@@ -80,8 +81,14 @@ public class VersionListener
       case 6: {
         int major = Integer.parseInt(ctx.getChild(0).getText());
         int minor = Integer.parseInt(ctx.getChild(2).getText());
-        int patch = Integer.parseInt(ctx.getChild(4).getText());
-        version = new SemanticVersion(major, minor, patch);
+        try {
+          int patch = Integer.parseInt(ctx.getChild(4).getText());
+          version = new SemanticVersion(major, minor, patch);
+        } catch (NumberFormatException e) {
+          // This can happen if the number is a long. In this case we will force it to be an identifier as a reassonable
+          // work-around.
+          version = new SemanticVersion(major + "." + minor + ".0-" + ctx.getChild(4).getText());
+        }
         break;
       }
       case 7:

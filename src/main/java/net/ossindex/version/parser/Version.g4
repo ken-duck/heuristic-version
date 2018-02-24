@@ -166,7 +166,7 @@ named_version
  * We need special handling of the first character
  */
 identifier
-	: ~(NUMBER | '.' | '-' | '&' | OR | ',') any*?
+	: ~('.' | '-' | '&' | OR | ',') any*?
 	;
 
 /** "any" exclusive of comparison operators and such
