@@ -119,11 +119,16 @@ simple_range
 	;
 
 version
-	: '='? (numeric_version
+	: '='? stream? (numeric_version
 	| postfix_version
 	| prefixed_version
 	| named_version)
 	;
+
+/** FIXME: Should we be ignoring the "stream"?
+ */
+stream
+        : NUMBER ':';
 
 /** A version which has text at the beginning
  *

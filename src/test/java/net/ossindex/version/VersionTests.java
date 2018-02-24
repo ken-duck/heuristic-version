@@ -327,7 +327,7 @@ public class VersionTests
 
     range = parseVersion("<1:1.8.7+dfsg-1+deb8u1");
     assertNotNull(range);
-    assertEquals("<1.8.7+dfsg-1+deb8u1", range.toString());
+    assertEquals("<1.8.7-dfsg-1+deb8u1", range.toString());
 
     range = parseVersion("1:4.6.0-4.6.1-pre1-2");
     assertNotNull(range);
