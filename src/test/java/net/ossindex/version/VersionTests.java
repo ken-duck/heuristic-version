@@ -334,6 +334,49 @@ public class VersionTests
     assertEquals("4.6.0-4.6.1-pre1-2", range.toString());
   }
 
+  @Test
+  public void testLeadingZeros() throws IOException {
+    IVersionRange range = parseVersion("01.0.0");
+    assertNotNull(range);
+    assertEquals("1.0.0", range.toString());
+
+    range = parseVersion("01.0.0.5");
+    assertNotNull(range);
+    assertEquals("1.0.0.5", range.toString());
+
+    range = parseVersion("01");
+    assertNotNull(range);
+    assertEquals("1.0.0", range.toString());
+
+    range = parseVersion("1.02.3");
+    assertNotNull(range);
+    assertEquals("1.2.3", range.toString());
+
+    range = parseVersion("1.02");
+    assertNotNull(range);
+    assertEquals("1.2.0", range.toString());
+
+    range = parseVersion("1.02.3.4");
+    assertNotNull(range);
+    assertEquals("1.2.3.4", range.toString());
+
+    range = parseVersion("1.2.03");
+    assertNotNull(range);
+    assertEquals("1.2.3", range.toString());
+
+    range = parseVersion("1.2.03.4");
+    assertNotNull(range);
+    assertEquals("1.2.3.4", range.toString());
+
+    range = parseVersion("1.2.3.04");
+    assertNotNull(range);
+    assertEquals("1.2.3.4", range.toString());
+
+    range = parseVersion("1.2.3-04");
+    assertNotNull(range);
+    assertEquals("1.2.3-4", range.toString());
+  }
+
 
 
   /** Common test code
