@@ -146,8 +146,10 @@ public class VersionFactory
     }
     catch (EmptyStackException e) {
       System.err.println("Could not parse: " + vstring);
+      e.printStackTrace();
     }
     catch (Exception e) {
+      System.err.println("Could not parse: " + vstring);
       e.printStackTrace();
     }
     IVersion version = new NamedVersion(vstring);

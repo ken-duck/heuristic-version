@@ -387,6 +387,10 @@ public class VersionTests
     range = parseVersion("1.2.3-0");
     assertNotNull(range);
     assertEquals("1.2.3", range.toString());
+
+    range = parseVersion("1.1.0.wildfly.007");
+    assertNotNull(range);
+    assertEquals("1.1.0-wildfly.007", range.toString());
   }
 
 
