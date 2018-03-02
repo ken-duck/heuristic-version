@@ -336,7 +336,9 @@ public class VersionTests
 
   @Test
   public void testLeadingZeros() throws IOException {
-    IVersionRange range = parseVersion("01.0.0");
+    IVersionRange range = null;
+
+    range = parseVersion("01.0.0");
     assertNotNull(range);
     assertEquals("1.0.0", range.toString());
 
@@ -374,11 +376,11 @@ public class VersionTests
 
     range = parseVersion("1.2.3-04a");
     assertNotNull(range);
-    assertEquals("1.2.3-04a", range.toString());
+    assertEquals("1.2.3-4a", range.toString());
 
     range = parseVersion("1.2.3-0a");
     assertNotNull(range);
-    assertEquals("1.2.3-0a", range.toString());
+    assertEquals("1.2.3-a", range.toString());
 
     range = parseVersion("1.2.3-04");
     assertNotNull(range);
@@ -390,7 +392,7 @@ public class VersionTests
 
     range = parseVersion("1.1.0.wildfly.007");
     assertNotNull(range);
-    assertEquals("1.1.0-wildfly.007", range.toString());
+    assertEquals("1.1.0-wildfly.7", range.toString());
   }
 
 

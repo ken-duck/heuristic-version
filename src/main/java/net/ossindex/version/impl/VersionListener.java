@@ -46,7 +46,7 @@ import net.ossindex.version.parser.VersionParser;
 public class VersionListener
     extends VersionBaseListener
 {
-  private static final Pattern numericHasLeadingZeroes = Pattern.compile(("^0+([0-9]*)$"));
+  private static final Pattern numericHasLeadingZeroes = Pattern.compile(("\\b0+"));
   private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
 
   private Stack<Object> stack = new Stack<Object>();
@@ -115,8 +115,8 @@ public class VersionListener
     // A numeric postfix cannot have leading zeroes
     // FIXME: Check to see if an alphanumeric postfix with leading zeroes counts
     Matcher m = numericHasLeadingZeroes.matcher(postfix);
-    if (m.find()) {
-      postfix = m.group(1);
+    while (m.find()) {
+      postfix = m.replaceAll("");
     }
     // Hack to ensure correct parsing by SemanticVersion code. A postfix MUST start with a dash, digit, or letter
     while (!postfix.isEmpty() && !startsWithDigitLetterOrHyphen.matcher(postfix).find()) {
