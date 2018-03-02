@@ -106,7 +106,7 @@ logical_range
 /** A set of versions
  */
 version_set
-	: versionstartsWithDigitLetterOrHyphen
+	: version
 	| version_set ',' version
 	;
 
