@@ -119,7 +119,7 @@ public class VersionListener
       postfix = m.group(1);
     }
     // Hack to ensure correct parsing by SemanticVersion code. A postfix MUST start with a dash, digit, or letter
-    while (!startsWithDigitLetterOrHyphen.matcher(postfix).find()) {
+    while (!postfix.isEmpty() && !startsWithDigitLetterOrHyphen.matcher(postfix).find()) {
       postfix = postfix.substring(1);
     }
     stack.push(postfix);

@@ -383,6 +383,10 @@ public class VersionTests
     range = parseVersion("1.2.3-04");
     assertNotNull(range);
     assertEquals("1.2.3-4", range.toString());
+
+    range = parseVersion("1.2.3-0");
+    assertNotNull(range);
+    assertEquals("1.2.3", range.toString());
   }
 
 

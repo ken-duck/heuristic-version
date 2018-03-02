@@ -95,6 +95,10 @@ public class SemanticVersion
    */
   protected void setVersion(String buf)
   {
+    // HACK to handle empty postfix
+    while (buf.endsWith("-")) {
+      buf = buf.substring(0, buf.length() - 1);
+    }
     head = Version.valueOf(buf);
 
     significantDigits = -1;
