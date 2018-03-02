@@ -99,6 +99,9 @@ public class SemanticVersion
     while (buf.endsWith("-")) {
       buf = buf.substring(0, buf.length() - 1);
     }
+    while (buf.endsWith(".")) {
+      buf = buf.substring(0, buf.length() - 1);
+    }
     head = Version.valueOf(buf);
 
     significantDigits = -1;
