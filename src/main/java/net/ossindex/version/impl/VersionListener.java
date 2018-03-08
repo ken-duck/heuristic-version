@@ -394,8 +394,18 @@ public class VersionListener
 
     // This could be a version set
     if (ctx.getChildCount() == 3) {
-      SemanticVersion v1 = (SemanticVersion) stack.pop();
-      VersionSet set = new VersionSet(v1);
+      VersionSet set = new VersionSet();
+      if (!"-".equals(ctx.getChild(1).getText())) {
+        SemanticVersion v1 = (SemanticVersion) stack.pop();
+        set.add(v1);
+      }
+      stack.push(set);
+      return;
+    }
+
+    // Possibly an empty set
+    if (ctx.getChildCount() == 2) {
+      VersionSet set = new VersionSet();
       stack.push(set);
       return;
     }

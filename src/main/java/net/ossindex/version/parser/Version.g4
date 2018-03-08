@@ -48,6 +48,10 @@ range
 maven_ranges
     : maven_range
     | maven_range ',' maven_ranges
+    | '[' '-'? ']'
+    | '(' '-'? ')'
+    | '[' '-'? ')'
+    | '(' '-'? ']'
     ;
 
 /**

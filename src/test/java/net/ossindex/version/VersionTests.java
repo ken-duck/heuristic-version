@@ -313,6 +313,10 @@ public class VersionTests
     IVersionRange range = parseVersion("0.2.4.23-1~deb7u1");
     assertNotNull(range);
     assertEquals("0.2.4.23-1~deb7u1", range.toString());
+
+    range = parseVersion("3.0-JBoss-4.0.2_03");
+    assertNotNull(range);
+    assertEquals("3.0-JBoss-4.0.2-3", range.toString());
   }
 
   @Test
@@ -338,65 +342,69 @@ public class VersionTests
   public void testLeadingZeros() throws IOException {
     IVersionRange range = null;
 
-    //range = parseVersion("01.0.0");
-    //assertNotNull(range);
-    //assertEquals("1.0.0", range.toString());
-    //
-    //range = parseVersion("01.0.0.5");
-    //assertNotNull(range);
-    //assertEquals("1.0.0.5", range.toString());
-    //
-    //range = parseVersion("01");
-    //assertNotNull(range);
-    //assertEquals("1.0.0", range.toString());
-    //
-    //range = parseVersion("1.02.3");
-    //assertNotNull(range);
-    //assertEquals("1.2.3", range.toString());
-    //
-    //range = parseVersion("1.02");
-    //assertNotNull(range);
-    //assertEquals("1.2.0", range.toString());
-    //
-    //range = parseVersion("1.02.3.4");
-    //assertNotNull(range);
-    //assertEquals("1.2.3.4", range.toString());
-    //
-    //range = parseVersion("1.2.03");
-    //assertNotNull(range);
-    //assertEquals("1.2.3", range.toString());
-    //
-    //range = parseVersion("1.2.03.4");
-    //assertNotNull(range);
-    //assertEquals("1.2.3.4", range.toString());
-    //
-    //range = parseVersion("1.2.3.04");
-    //assertNotNull(range);
-    //assertEquals("1.2.3.4", range.toString());
-    //
-    //range = parseVersion("1.2.3-04a");
-    //assertNotNull(range);
-    //assertEquals("1.2.3-4a", range.toString());
-    //
-    //range = parseVersion("1.2.3-0a");
-    //assertNotNull(range);
-    //assertEquals("1.2.3-a", range.toString());
-    //
-    //range = parseVersion("1.2.3-04");
-    //assertNotNull(range);
-    //assertEquals("1.2.3-4", range.toString());
-    //
-    //range = parseVersion("1.2.3-0");
-    //assertNotNull(range);
-    //assertEquals("1.2.3", range.toString());
-    //
-    //range = parseVersion("1.1.0.wildfly.007");
-    //assertNotNull(range);
-    //assertEquals("1.1.0-wildfly.7", range.toString());
+    range = parseVersion("01.0.0");
+    assertNotNull(range);
+    assertEquals("1.0.0", range.toString());
+
+    range = parseVersion("01.0.0.5");
+    assertNotNull(range);
+    assertEquals("1.0.0.5", range.toString());
+
+    range = parseVersion("01");
+    assertNotNull(range);
+    assertEquals("1.0.0", range.toString());
+
+    range = parseVersion("1.02.3");
+    assertNotNull(range);
+    assertEquals("1.2.3", range.toString());
+
+    range = parseVersion("1.02");
+    assertNotNull(range);
+    assertEquals("1.2.0", range.toString());
+
+    range = parseVersion("1.02.3.4");
+    assertNotNull(range);
+    assertEquals("1.2.3.4", range.toString());
+
+    range = parseVersion("1.2.03");
+    assertNotNull(range);
+    assertEquals("1.2.3", range.toString());
+
+    range = parseVersion("1.2.03.4");
+    assertNotNull(range);
+    assertEquals("1.2.3.4", range.toString());
+
+    range = parseVersion("1.2.3.04");
+    assertNotNull(range);
+    assertEquals("1.2.3.4", range.toString());
+
+    range = parseVersion("1.2.3-04a");
+    assertNotNull(range);
+    assertEquals("1.2.3-4a", range.toString());
+
+    range = parseVersion("1.2.3-0a");
+    assertNotNull(range);
+    assertEquals("1.2.3-a", range.toString());
+
+    range = parseVersion("1.2.3-04");
+    assertNotNull(range);
+    assertEquals("1.2.3-4", range.toString());
+
+    range = parseVersion("1.2.3-0");
+    assertNotNull(range);
+    assertEquals("1.2.3", range.toString());
+
+    range = parseVersion("1.1.0.wildfly.007");
+    assertNotNull(range);
+    assertEquals("1.1.0-wildfly.7", range.toString());
 
     range = parseVersion("0.0.17-alpha.0");
     assertNotNull(range);
     assertEquals("0.0.17-alpha", range.toString());
+
+    range = parseVersion("2015.04.01-0");
+    assertNotNull(range);
+    assertEquals("2015.04.01", range.toString());
   }
 
 

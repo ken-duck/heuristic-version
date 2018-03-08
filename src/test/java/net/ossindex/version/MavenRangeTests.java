@@ -151,4 +151,15 @@ public class MavenRangeTests
     assertNotNull(range);
     assertEquals(">=2.4.0-beta <=2.4.0-rc1", range.toString());
   }
+
+  @Test
+  public void emptyRangeTest()
+  {
+    IVersionRange range = VersionFactory.getRange("[]");
+    assertNotNull(range);
+    assertEquals("", range.toString());
+    range = VersionFactory.getRange("[-]");
+    assertNotNull(range);
+    assertEquals("", range.toString());
+  }
 }

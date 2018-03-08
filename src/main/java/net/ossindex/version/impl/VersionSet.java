@@ -53,10 +53,10 @@ public class VersionSet
    */
   private SortedSet<IVersion> set = new TreeSet<IVersion>();
 
-  /**
-   *
-   * @param range
-   */
+  public VersionSet()
+  {
+  }
+
   public VersionSet(IVersion version)
   {
     set.add(version);
