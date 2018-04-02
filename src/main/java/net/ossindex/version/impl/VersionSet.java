@@ -98,6 +98,9 @@ public class VersionSet
   @Override
   public IVersion getMinimum()
   {
+    if (set.isEmpty()) {
+      return new VersionImpl(0,0,0);
+    }
     return set.first();
   }
 
@@ -108,6 +111,9 @@ public class VersionSet
   @Override
   public IVersion getMaximum()
   {
+    if (set.isEmpty()) {
+      return new VersionImpl(0,0,0);
+    }
     return set.last();
   }
 

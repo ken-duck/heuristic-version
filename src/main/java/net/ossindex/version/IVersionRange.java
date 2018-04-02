@@ -36,39 +36,31 @@ public interface IVersionRange
 {
   /**
    *
-   * @param version
-   * @return
    */
   public abstract boolean contains(IVersion version);
 
   /** Returns true if this range is a simple singular version
    *
-   * @return
    */
   public abstract boolean isDiscrete();
 
   /** Return the minimum version that satisfies this range
    *
-   * @return
    */
   public abstract IVersion getMinimum();
 
   /** Return the maximum version that satisfies this range
    *
-   * @return
    */
   public abstract IVersion getMaximum();
 
   /** Return true if this is a simple range which has no gaps
    *
-   * @return
    */
   public abstract boolean isSimple();
 
   /** Check if two ranges intersect
    *
-   * @param yourRange
-   * @return
    */
   public abstract boolean intersects(IVersionRange yourRange);
 
@@ -79,21 +71,16 @@ public interface IVersionRange
 
   /**
    * Get a simplified version range, suitable for users to read quickly
-   * @return
    */
   public abstract IVersionRange getSimplifiedRange();
 
   /**
    * Get the range type
-   *
-   * @return
    */
   public abstract String getType();
 
   /**
    * Give the range a type. This indicates the "style" of the range.
-   *
-   * @param type
    */
   public abstract void setType(String type);
 

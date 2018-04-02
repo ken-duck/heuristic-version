@@ -76,6 +76,9 @@ public class VersionImpl
   @Override
   public int compareTo(IVersion v)
   {
+    if (v instanceof NamedVersion) {
+      throw new IllegalArgumentException("Cannot compare named version with unnamed version");
+    }
     if (v.getMajor() > major) {
       return -1;
     }
@@ -125,4 +128,22 @@ public class VersionImpl
     return suffix == null;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(major);
+    sb.append(".");
+    sb.append(minor);
+    sb.append(".");
+    sb.append(patch);
+    if (build > 0) {
+      sb.append(".");
+      sb.append(build);
+    }
+    if (suffix != null) {
+      sb.append("-");
+      sb.append(suffix);
+    }
+    return sb.toString();
+  }
 }
