@@ -6,7 +6,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test range parsing
@@ -144,6 +146,30 @@ public class ContainsTests
     assertFalse(range.contains(VersionFactory.getVersion("2.3.1")));
     assertFalse(range.contains(VersionFactory.getVersion("2.4")));
     assertFalse(range.contains(VersionFactory.getVersion("bob")));
+  }
+
+  @Test
+  public void testInvalidRangeWithImplicitAnd()
+  {
+    try {
+      IVersionRange range = VersionFactory.getRange(">=2.10 <=2.2.4");
+      fail("Expected AssertionError");
+    }
+    catch (AssertionError e) {
+      assertEquals(e.getMessage(), "Anded ranges do not intersect; this can never happen [>=2.10.0 & <=2.2.4]");
+    }
+  }
+
+  @Test
+  public void testInvalidRangeWithExplicitAnd()
+  {
+    try {
+      IVersionRange range = VersionFactory.getRange(">=2.10 & <=2.2.4");
+      fail("Expected AssertionError");
+    }
+    catch (AssertionError e) {
+      assertEquals(e.getMessage(), "Anded ranges do not intersect; this can never happen [>=2.10.0 & <=2.2.4]");
+    }
   }
 
   @Test
