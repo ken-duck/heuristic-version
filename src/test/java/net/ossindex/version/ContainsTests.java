@@ -153,7 +153,7 @@ public class ContainsTests
   {
     try {
       IVersionRange range = VersionFactory.getRange(">=2.10 <=2.2.4");
-      fail("Expected AssertionError");
+      fail("Expected InvalidRangeException");
     }
     catch (AssertionError e) {
       assertEquals(e.getMessage(), "Anded ranges do not intersect; this can never happen [>=2.10.0 & <=2.2.4]");
@@ -165,7 +165,7 @@ public class ContainsTests
   {
     try {
       IVersionRange range = VersionFactory.getRange(">=2.10 & <=2.2.4");
-      fail("Expected AssertionError");
+      fail("Expected InvalidRangeException");
     }
     catch (AssertionError e) {
       assertEquals(e.getMessage(), "Anded ranges do not intersect; this can never happen [>=2.10.0 & <=2.2.4]");
