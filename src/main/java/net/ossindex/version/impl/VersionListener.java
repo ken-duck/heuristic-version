@@ -32,6 +32,8 @@ import java.util.regex.Pattern;
 
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
+import net.ossindex.version.InvalidRangeException;
+import net.ossindex.version.InvalidRangeRuntimeException;
 import net.ossindex.version.parser.VersionBaseListener;
 import net.ossindex.version.parser.VersionParser;
 
@@ -281,7 +283,7 @@ public class VersionListener
       stack.push(range);
     }
     else {
-      throw new AssertionError("Expected a semantic version, got a " + o.getClass().getSimpleName());
+      throw new InvalidRangeRuntimeException("Expected a semantic version, got a " + o.getClass().getSimpleName());
     }
   }
 
