@@ -93,7 +93,8 @@ union_range
 logical_range
 	: '(' logical_range ')'
 	| '(' simple_range ')'
-	
+	| '(' union_range ')'
+
 	| simple_range {whitespace();} simple_range
 	| logical_range {whitespace();} simple_range
 	| logical_range {whitespace();} logical_range
