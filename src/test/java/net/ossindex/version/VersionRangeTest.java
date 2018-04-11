@@ -152,33 +152,4 @@ public class VersionRangeTest
     assertEquals(">=1.2.0 <1.3.0", range.toString());
   }
 
-  @Test
-  public void testImplicitAnd() {
-    IVersionRange range = VersionFactory.getRange(">=2.0.0 <=2.5.3-SP13");
-    assertNotNull(range);
-    assertEquals("[2.0.0,2.5.3-SP13]", range.toMavenString());
-  }
-
-  @Test
-  public void testUnionRanges() {
-    IVersionRange range = VersionFactory.getRange("(>=2.0.0 <=2.5.3-SP13) | (>=2.6.0 <=2.6.1)");
-    assertNotNull(range);
-    assertEquals("[2.0.0,2.5.3-SP13],[2.6.0,2.6.1]", range.toMavenString());
-  }
-
-  @Test
-  public void testTripleUnionRanges() {
-    IVersionRange range = VersionFactory.getRange("(>=2.0.0 <=2.5.3-SP13) | (>=2.6.0 <=2.6.1) | (>=2.7.0 <=2.7.1-Beta2)");
-    assertNotNull(range);
-    assertEquals("[2.0.0,2.5.3-SP13],[2.6.0,2.6.1],[2.7.0,2.7.1-Beta2]", range.toMavenString());
-  }
-
-  @Test
-  public void testNestedUnionRanges() {
-    IVersionRange range = VersionFactory.getRange("(>=2.0.0 <=2.5.3-SP13) | ((>=2.6.0 <=2.6.1) | (>=2.7.0 <=2.7.1-Beta2))");
-    assertNotNull(range);
-    assertEquals("[2.0.0,2.5.3-SP13],[2.6.0,2.6.1],[2.7.0,2.7.1-Beta2]", range.toMavenString());
-  }
-
-
 }
