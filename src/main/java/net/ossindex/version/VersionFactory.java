@@ -57,6 +57,15 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
  */
 public class VersionFactory
 {
+  // These characters have special meaning for semantic ranges, so should not be in named versions
+  private static final Pattern SEMANTIC_RANGE_SPECIAL_CHARS = Pattern.compile("[><=|&]");
+
+  // Maven ranges star with ( or [, so we should not allow any version wih these characters to become named versions
+  private static final Pattern SET_RANGE_SPECIAL_CHARS = Pattern.compile("^[\\(\\[]");
+
+  // We just won't let these charactersm happen in a named version because that would be madness
+  private static final Pattern INVALID_VERSION_CHARS = Pattern.compile("[ \t\n\r]");
+
   private static VersionFactory strictInstance;
 
   private static VersionFactory instance;
@@ -190,15 +199,6 @@ public class VersionFactory
     IVersion version = new NamedVersion(vstring);
     return new VersionSet(version);
   }
-
-  // These characters have special meaning for semantic ranges, so should not be in named versions
-  private static final Pattern SEMANTIC_RANGE_SPECIAL_CHARS = Pattern.compile("[><=|&]");
-
-  // Maven ranges star with ( or [, so we should not allow any version wih these characters to become named versions
-  private static final Pattern SET_RANGE_SPECIAL_CHARS = Pattern.compile("^[\\(\\[]");
-
-  // We just won't let these charactersm happen in a named version because that would be madness
-  private static final Pattern INVALID_VERSION_CHARS = Pattern.compile("[ \t\n\r]");
 
   /**
    * People use all sorts of whack characters in version. We are just excluding
