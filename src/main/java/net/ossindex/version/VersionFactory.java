@@ -170,12 +170,11 @@ public class VersionFactory
       System.err.println("ERROR: Could not parse: " + vstring);
     }
     catch (InvalidRangeRuntimeException e) {
-      if (strict) {
-        throw new InvalidRangeException(e.getMessage(), e);
-      }
-      System.err.println("ERROR: Could not parse: " + vstring);
+      // These are always critical. They indicate a fundamental problem with the version range.
+      throw new InvalidRangeException(e.getMessage(), e);
     }
     catch (Exception e) {
+      // Parse errors and wot not will come here
       if (strict) {
         throw new InvalidRangeException(e);
       }
@@ -207,8 +206,8 @@ public class VersionFactory
    */
   private boolean isValidNamedVersion(final String s) {
     if (SEMANTIC_RANGE_SPECIAL_CHARS.matcher(s).find()
-            || SET_RANGE_SPECIAL_CHARS.matcher(s).find()
-            || INVALID_VERSION_CHARS.matcher(s).find()
+        || SET_RANGE_SPECIAL_CHARS.matcher(s).find()
+        || INVALID_VERSION_CHARS.matcher(s).find()
         ) {
       return false;
     }
