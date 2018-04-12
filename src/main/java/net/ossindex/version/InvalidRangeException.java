@@ -10,4 +10,8 @@ public class InvalidRangeException
   public InvalidRangeException(String msg) {
     super(msg);
   }
+
+  public InvalidRangeException(final String message, final InvalidRangeRuntimeException cause) {
+    super(message, cause);
+  }
 }

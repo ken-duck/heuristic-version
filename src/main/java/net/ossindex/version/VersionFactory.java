@@ -167,15 +167,19 @@ public class VersionFactory
       if (strict) {
         throw new InvalidRangeException(e);
       }
-      System.err.println("Could not parse: " + vstring);
-      e.printStackTrace();
+      System.err.println("ERROR: Could not parse: " + vstring);
+    }
+    catch (InvalidRangeRuntimeException e) {
+      if (strict) {
+        throw new InvalidRangeException(e.getMessage(), e);
+      }
+      System.err.println("ERROR: Could not parse: " + vstring);
     }
     catch (Exception e) {
       if (strict) {
         throw new InvalidRangeException(e);
       }
-      System.err.println("Could not parse: " + vstring);
-      e.printStackTrace();
+      System.err.println("ERROR: Could not parse: " + vstring);
     }
 
     // Don't make a named version of a string we should have parsed.
