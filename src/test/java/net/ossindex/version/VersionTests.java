@@ -38,12 +38,16 @@ import net.ossindex.version.parser.VersionParser.RangeContext;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /** Test the version parser
@@ -51,6 +55,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Ken Duck
  *
  */
+@RunWith(JUnitParamsRunner.class)
 public class VersionTests
 {
   @Before
@@ -233,11 +238,12 @@ public class VersionTests
   }
 
   @Test
-  public void testInvalidVersion() throws IOException
+  @Parameters({"1.2.3 &, 1.2.3"})
+  public void testInvalidVersions(final String name, final String expected) throws IOException
   {
-    IVersionRange range = parseVersion("1.2.3 &");
+    IVersionRange range = parseVersion(name);
     assertNotNull(range);
-    assertEquals("1.2.3", range.toString());
+    assertEquals(expected, range.toString());
   }
 
   @Test

@@ -1,14 +1,23 @@
 package net.ossindex.version;
 
+import java.io.IOException;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import net.ossindex.version.impl.NamedVersion;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ken Duck
  */
+@RunWith(JUnitParamsRunner.class)
 public class VersionRangeTest
 {
   @Test
@@ -182,5 +191,56 @@ public class VersionRangeTest
     assertEquals("[2.0.0,2.5.3-SP13],[2.6.0,2.6.1],[2.7.0,2.7.1-Beta2]", range.toMavenString());
   }
 
+  @Test
+  @Parameters({
+      ">=1.2.3 <1.1.1", // Ranges do not intersect
+      "[named]",
+      "(named]",
+      "named&version",
+      "named=version",
+      "named>version",
+      "named<version",
+      "1.2.3[zounds]",
+      "named version",
+      "named[wow]",
+      "named(zounds)"
+  })
+  public void testStrictInvalidVersions(final String name) throws IOException
+  {
+    try {
+      IVersionRange version = VersionFactory.getStrictVersionFactory().getRange(name);
+      assertFalse("Strict mode expects an exception, got " + version, true);
+    }
+    catch (InvalidRangeException e) {
+    }
+  }
 
+  @Test
+  public void testStrictInvalidVersionWithSpace() throws IOException
+  {
+    try {
+      IVersionRange version = VersionFactory.getStrictVersionFactory().getRange("named version");
+      assertFalse("Strict mode expects an exception, got " + version, true);
+    }
+    catch (InvalidRangeException e) {
+    }
+  }
+
+  @Test
+  @Parameters({
+      "namedVersion",
+      "named-version",
+      "named.version",
+      "named+version",
+  })
+  public void testStrictValidNamedVersions(final String name) throws IOException
+  {
+    try {
+      IVersion range = VersionFactory.getStrictVersionFactory().getVersion(name);
+      assertTrue(range instanceof NamedVersion);
+    }
+    catch (InvalidRangeException e) {
+      assertFalse("Strict mode does not expect an exception", true);
+    }
+  }
 }

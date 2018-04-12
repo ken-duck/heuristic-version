@@ -57,15 +57,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
  */
 public class VersionFactory
 {
-  // These characters have special meaning for semantic ranges, so should not be in named versions
-  private static final Pattern SEMANTIC_RANGE_SPECIAL_CHARS = Pattern.compile("[><=|&]");
-
-  // Maven ranges star with ( or [, so we should not allow any version wih these characters to become named versions
-  private static final Pattern SET_RANGE_SPECIAL_CHARS = Pattern.compile("^[\\(\\[]");
-
-  // We just won't let these charactersm happen in a named version because that would be madness
-  private static final Pattern INVALID_VERSION_CHARS = Pattern.compile("[ \t\n\r]");
-
   private static VersionFactory strictInstance;
 
   private static VersionFactory instance;
@@ -163,11 +154,14 @@ public class VersionFactory
       RangeContext context = parser.range();
 
       ParseTreeWalker walker = new ParseTreeWalker();
-      VersionListener listener = new VersionListener();
+      VersionListener listener = new VersionListener(strict);
       walker.walk(listener, context);
 
       IVersionRange range = listener.getRange();
       if (errorListener.hasErrors()) {
+        if (strict) {
+          throw new InvalidRangeException("Parse errors on " + vstring);
+        }
         range.setHasErrors(true);
       }
       return range;
@@ -190,28 +184,9 @@ public class VersionFactory
       System.err.println("ERROR: Could not parse: " + vstring);
     }
 
-    // Don't make a named version of a string we should have parsed.
-    if (!isValidNamedVersion(vstring)) {
-      throw new InvalidRangeException("Could not parse: " + vstring);
-    }
-
     // Fall back to a named version
     IVersion version = new NamedVersion(vstring);
     return new VersionSet(version);
-  }
-
-  /**
-   * People use all sorts of whack characters in version. We are just excluding
-   * the smallest set that we can.
-   */
-  private boolean isValidNamedVersion(final String s) {
-    if (SEMANTIC_RANGE_SPECIAL_CHARS.matcher(s).find()
-        || SET_RANGE_SPECIAL_CHARS.matcher(s).find()
-        || INVALID_VERSION_CHARS.matcher(s).find()
-        ) {
-      return false;
-    }
-    return true;
   }
 
   /**

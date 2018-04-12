@@ -52,9 +52,18 @@ public class VersionListener
 
   private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
 
+  private boolean strict = false;
+
   private Stack<Object> stack = new Stack<Object>();
 
   private IVersionRange range;
+
+  public VersionListener() {super();}
+
+  public VersionListener(final boolean strict) {
+    super();
+    this.strict = strict;
+  }
 
   public IVersionRange getRange()
   {
@@ -230,7 +239,13 @@ public class VersionListener
   @Override
   public void exitNamed_version(VersionParser.Named_versionContext ctx)
   {
-    IVersion version = new NamedVersion(ctx.getText());
+    IVersion version = null;
+    try {
+      version = new NamedVersion(ctx.getText());
+    }
+    catch (InvalidRangeException e) {
+      throw new InvalidRangeRuntimeException(e.getMessage(), e);
+    }
     stack.push(version);
   }
 
@@ -485,4 +500,13 @@ public class VersionListener
     }
   }
 
+  /**
+   * In strict mode we will want to disallow broken ranges
+   */
+  @Override
+  public void exitBroken_range(VersionParser.Broken_rangeContext ctx) {
+    if (strict) {
+      throw new InvalidRangeRuntimeException("Cannot create 'broken' range in strict mode");
+    }
+  }
 }
