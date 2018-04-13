@@ -149,7 +149,7 @@ public class VersionListener
     int count = ctx.getChildCount();
     Object o = stack.pop();
     if (!(o instanceof String)) {
-      throw new InvalidRangeRuntimeException("Expected string, got " + o.getClass().getSimpleName());
+      throw new InvalidRangeRuntimeException("Expected string, got " + o.getClass().getSimpleName() + " (" + o + ")");
     }
     String postfix = (String) o;
     switch (count) {
