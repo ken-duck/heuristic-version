@@ -1,7 +1,7 @@
 package net.ossindex.version;
 
 /**
- * The parser is not happy with us injection a regular exception, so make this one a RuntimeException. We will
+ * The parser is not happy with us injecting a regular exception, so make this one a RuntimeException. We will
  * catch and convert it later.
  */
 public class InvalidRangeRuntimeException

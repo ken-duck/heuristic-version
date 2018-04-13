@@ -52,16 +52,17 @@ public class VersionListener
 
   private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
 
-  private boolean strict = false;
+  private final boolean strict;
 
   private Stack<Object> stack = new Stack<Object>();
 
   private IVersionRange range;
 
-  public VersionListener() {super();}
+  public VersionListener() {
+    this.strict = false;
+  }
 
   public VersionListener(final boolean strict) {
-    super();
     this.strict = strict;
   }
 

@@ -43,10 +43,10 @@ public class NamedVersion
   // These characters have special meaning for semantic ranges, so should not be in named versions
   private static final Pattern SEMANTIC_RANGE_SPECIAL_CHARS = Pattern.compile("[><=|&]");
 
-  // Maven ranges star with ( or [, so we should not allow any version wih these characters to become named versions
+  // Maven ranges start with ( or [, so we should not allow any version wih these characters to become named versions
   private static final Pattern SET_RANGE_SPECIAL_CHARS = Pattern.compile("^[\\(\\[]");
 
-  // We just won't let these charactersm happen in a named version because that would be madness
+  // We just won't let these characters happen in a named version because that would be madness
   private static final Pattern INVALID_VERSION_CHARS = Pattern.compile("[ \t\n\r]");
 
   private String name;

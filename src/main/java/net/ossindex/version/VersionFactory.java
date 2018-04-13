@@ -61,7 +61,7 @@ public class VersionFactory
 
   private static VersionFactory instance;
 
-  private boolean strict = false;
+  private final boolean strict;
 
   /**
    * Private. Use "getVersionFactory" instead.
