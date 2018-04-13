@@ -21,7 +21,7 @@ grammar Version;
         /**
          * No whitespace in the HIDDEN channel
          */
-	private boolean notWhitespace() {
+	private boolean nw() {
 	  return !whitespace();
 	}
 }
@@ -138,25 +138,26 @@ prefixed_version
  * though they may not strictly match. Close enough to handle in this one place.
  */
 postfix_version
-	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER identifier
-	| NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.' identifier
-	| NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '-' identifier
-	| NUMBER '.' NUMBER '.' NUMBER identifier
-	| NUMBER '.' NUMBER '.' NUMBER '.' identifier
-	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
-	| NUMBER '.' NUMBER identifier
-	| NUMBER '.' NUMBER '.' identifier
-	| NUMBER '.' NUMBER '-' identifier
+	: NUMBER dot NUMBER dot NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER sep identifier
 	;
 
 /** Simple numeric matching. Strip trailing dots if they exist.
  */
 numeric_version
-	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.'?
-	| NUMBER '.' NUMBER '.' NUMBER '.'?
-	| NUMBER '.' NUMBER '.'?
-	| NUMBER '.'?
+	: NUMBER dot NUMBER dot NUMBER dot NUMBER dot?
+	| NUMBER dot NUMBER dot NUMBER dot?
+	| NUMBER dot NUMBER dot?
+	| NUMBER dot?
 	;
+
+sep
+  : {nw()}? (
+    '.' | '_' | '-'
+  ) {nw()}?;
+
+dot : {nw()}? '.' {nw()}?;
 
 /** A fall back for when all else fails. Spaces are not valid in named versions, regardless.
  */
@@ -168,7 +169,7 @@ named_version : valid_named_version;
  */
 valid_named_version
 	: any
-	| any {notWhitespace()}? valid_named_version
+	| any {nw()}? valid_named_version
 	;
 
 /** Note that identifier is NOT GREEDY.

@@ -203,7 +203,8 @@ public class VersionRangeTest
       "1.2.3[zounds]",
       "named version",
       "named[wow]",
-      "named(zounds)"
+      "named(zounds)",
+      "named version"
   })
   public void testStrictInvalidVersions(final String name) throws IOException
   {
@@ -216,10 +217,10 @@ public class VersionRangeTest
   }
 
   @Test
-  public void testStrictInvalidVersionWithSpace() throws IOException
+  public void testStrictCrazyInvalidVersion() throws IOException
   {
     try {
-      IVersionRange version = VersionFactory.getStrictVersionFactory().getRange("named version");
+      IVersionRange version = VersionFactory.getStrictVersionFactory().getRange(">=3.0.0 <=3.9.1 =3.10.2");
       assertFalse("Strict mode expects an exception, got " + version, true);
     }
     catch (InvalidRangeException e) {
