@@ -1,8 +1,12 @@
 package net.ossindex.version;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -10,23 +14,40 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Ken Duck
  */
+@RunWith(JUnitParamsRunner.class)
 public class MavenRangeTests
 {
 
   @Test
-  public void inclusiveVersionTest() throws InvalidRangeException
+  @Parameters({
+      "4.3.2.1, 4.3.2.1",
+      "4.3.2, 4.3.2",
+      "[4.3.2], 4.3.2",
+      "[4.3], 4.3.0",
+      "[4], 4.0.0",
+      "[4.3.2.1-beta], 4.3.2.1-beta",
+      "[4.3.2-beta], 4.3.2-beta",
+      "[4.3-beta], 4.3.0-beta",
+      //"[4-beta], 4.0.0-beta",
+      "[4.3.2.1_beta], 4.3.2.1-beta",
+      "[4.3.2_beta], 4.3.2-beta",
+      "[4.3_beta], 4.3.0-beta",
+      //"[4_beta], 4.0.0-beta",
+      "[4.3.2.1.beta], 4.3.2.1-beta",
+      "[4.3.2.beta], 4.3.2-beta",
+      "[4.3.beta], 4.3.0-beta",
+      //"[4.beta], 4.0.0-beta",
+      "[4.3.2.1beta], 4.3.2.1-beta",
+      "[4.3.2beta], 4.3.2-beta",
+      "[4.3beta], 4.3.0-beta",
+      //"[4beta], 4.0.0-beta",
+      "[2.4.0rc1], 2.4.0-rc1"
+  })
+  public void inclusiveVersionTest(final String rstring, final String expected) throws InvalidRangeException
   {
-    IVersionRange range = VersionFactory.getVersionFactory().getRange("4.3.2");
+    IVersionRange range = VersionFactory.getVersionFactory().getRange(rstring);
     assertNotNull(range);
-    assertEquals("4.3.2", range.toString());
-  }
-
-  @Test
-  public void inclusiveVersionSetTest() throws InvalidRangeException
-  {
-    IVersionRange range = VersionFactory.getVersionFactory().getRange("[4.3.2]");
-    assertNotNull(range);
-    assertEquals("4.3.2", range.toString());
+    assertEquals(expected, range.toString());
   }
 
   @Test
@@ -161,5 +182,20 @@ public class MavenRangeTests
     range = VersionFactory.getVersionFactory().getRange("[-]");
     assertNotNull(range);
     assertEquals("", range.toString());
+  }
+
+  /**
+   * These are invalid ranges
+   */
+  @Test
+  public void invalidRangeTest() {
+    try {
+      String name = "(1.2.19,1.2.19]";
+      IVersionRange range = VersionFactory.getVersionFactory().getRange(name);
+      assertFalse("Range should be considered invalid: " + name, true);
+    }
+    catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -139,8 +139,11 @@ prefixed_version
  */
 postfix_version
 	: NUMBER dot NUMBER dot NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER dot NUMBER dot NUMBER {nw()}? identifier
 	| NUMBER dot NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER dot NUMBER {nw()}? identifier
 	| NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER {nw()}? identifier
 	;
 
 /** Simple numeric matching. Strip trailing dots if they exist.
@@ -157,6 +160,8 @@ sep
     '.' | '_' | '-'
   ) {nw()}?;
 
+/** Do we need to loosen this up to allow spaces around dots?
+ */
 dot : {nw()}? '.' {nw()}?;
 
 /** A fall back for when all else fails. Spaces are not valid in named versions, regardless.

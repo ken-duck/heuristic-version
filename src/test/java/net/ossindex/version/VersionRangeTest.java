@@ -194,6 +194,8 @@ public class VersionRangeTest
   @Test
   @Parameters({
       ">=1.2.3 <1.1.1", // Ranges do not intersect
+      ">1.2.19 <=1.2.19]",
+      ">=1.2.19 <1.2.19]",
       "[named]",
       "(named]",
       "named&version",
@@ -210,6 +212,17 @@ public class VersionRangeTest
   {
     try {
       IVersionRange version = VersionFactory.getStrictVersionFactory().getRange(name);
+      assertFalse("Strict mode expects an exception, got " + version, true);
+    }
+    catch (InvalidRangeException e) {
+    }
+  }
+
+  @Test
+  public void testStrictInvalidVersion() throws IOException
+  {
+    try {
+      IVersionRange version = VersionFactory.getStrictVersionFactory().getRange(">1.2.19 <=1.2.19]");
       assertFalse("Strict mode expects an exception, got " + version, true);
     }
     catch (InvalidRangeException e) {
