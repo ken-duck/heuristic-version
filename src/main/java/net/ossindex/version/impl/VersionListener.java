@@ -147,7 +147,11 @@ public class VersionListener
     SemanticVersion version = null;
 
     int count = ctx.getChildCount();
-    String postfix = (String) stack.pop();
+    Object o = stack.pop();
+    if (!(o instanceof String)) {
+      throw new InvalidRangeRuntimeException("Expected string, got " + o.getClass().getSimpleName());
+    }
+    String postfix = (String) o;
     switch (count) {
       case 4: {
         //1.2.3alpha
