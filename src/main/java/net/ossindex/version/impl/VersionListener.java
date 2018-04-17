@@ -32,6 +32,8 @@ import java.util.regex.Pattern;
 
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
+import net.ossindex.version.InvalidRangeException;
+import net.ossindex.version.InvalidRangeRuntimeException;
 import net.ossindex.version.parser.VersionBaseListener;
 import net.ossindex.version.parser.VersionParser;
 
@@ -50,9 +52,19 @@ public class VersionListener
 
   private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
 
+  private final boolean strict;
+
   private Stack<Object> stack = new Stack<Object>();
 
   private IVersionRange range;
+
+  public VersionListener() {
+    this.strict = false;
+  }
+
+  public VersionListener(final boolean strict) {
+    this.strict = strict;
+  }
 
   public IVersionRange getRange()
   {
@@ -136,7 +148,11 @@ public class VersionListener
     SemanticVersion version = null;
 
     int count = ctx.getChildCount();
-    String postfix = (String) stack.pop();
+    Object o = stack.pop();
+    if (!(o instanceof String)) {
+      throw new InvalidRangeRuntimeException("Expected string, got " + o.getClass().getSimpleName() + " (" + o + ")");
+    }
+    String postfix = (String) o;
     switch (count) {
       case 4: {
         //1.2.3alpha
@@ -228,7 +244,13 @@ public class VersionListener
   @Override
   public void exitNamed_version(VersionParser.Named_versionContext ctx)
   {
-    IVersion version = new NamedVersion(ctx.getText());
+    IVersion version = null;
+    try {
+      version = new NamedVersion(ctx.getText());
+    }
+    catch (InvalidRangeException e) {
+      throw new InvalidRangeRuntimeException(e.getMessage(), e);
+    }
     stack.push(version);
   }
 
@@ -281,7 +303,7 @@ public class VersionListener
       stack.push(range);
     }
     else {
-      throw new AssertionError("Expected a semantic version, got a " + o.getClass().getSimpleName());
+      throw new InvalidRangeRuntimeException("Expected a semantic version, got a " + o.getClass().getSimpleName());
     }
   }
 
@@ -483,4 +505,13 @@ public class VersionListener
     }
   }
 
+  /**
+   * In strict mode we will want to disallow broken ranges
+   */
+  @Override
+  public void exitBroken_range(VersionParser.Broken_rangeContext ctx) {
+    if (strict) {
+      throw new InvalidRangeRuntimeException("Cannot create 'broken' range in strict mode");
+    }
+  }
 }

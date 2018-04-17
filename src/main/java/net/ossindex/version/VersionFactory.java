@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import net.ossindex.version.impl.AndRange;
 import net.ossindex.version.impl.NamedVersion;
@@ -48,24 +49,30 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-/** This factory provides an appropriate version implementation for
+/**
+ * This factory provides an appropriate version implementation for
  * specified version strings.
  *
  * @author Ken Duck
- *
  */
 public class VersionFactory
 {
+  private static VersionFactory strictInstance;
+
   private static VersionFactory instance;
+
+  private final boolean strict;
 
   /**
    * Private. Use "getVersionFactory" instead.
    */
-  private VersionFactory()
+  private VersionFactory(boolean strict)
   {
+    this.strict = strict;
   }
 
-  /** Version factory, which is really not needed since we have all
+  /**
+   * Version factory, which is really not needed since we have all
    * static methods now.
    *
    * @return The instance of the version factory
@@ -73,17 +80,30 @@ public class VersionFactory
   public synchronized static VersionFactory getVersionFactory()
   {
     if (instance == null) {
-      instance = new VersionFactory();
+      instance = new VersionFactory(false);
     }
     return instance;
   }
 
-  /** Get a version implementation. Return the best match for the provided string.
+  /**
+   * Get a strict version factory. Strict means no versions can fall through to a named
+   * version. Every version needs to cleanly parse.
+   */
+  public synchronized static VersionFactory getStrictVersionFactory()
+  {
+    if (strictInstance == null) {
+      strictInstance = new VersionFactory(true);
+    }
+    return strictInstance;
+  }
+
+  /**
+   * Get a version implementation. Return the best match for the provided string.
    *
    * @param vstring A string version to be parsed
    * @return A version implementation
    */
-  public static IVersion getVersion(String vstring)
+  public IVersion getVersion(String vstring) throws InvalidRangeException
   {
     IVersionRange range = getRange(vstring);
     if (range == null) {
@@ -92,25 +112,24 @@ public class VersionFactory
     return range.getMinimum();
   }
 
-  /** Get a version implementation. A hint may be provided to help
+  /**
+   * Get a version implementation. A hint may be provided to help
    * choose the best implementation.
    *
-   * @param hint Hint of the version style
+   * @param hint    Hint of the version style
    * @param version A string version to be parsed
    * @return A version implementation
    */
-  public static IVersion getVersion(String hint, String version)
+  public IVersion getVersion(String hint, String version) throws InvalidRangeException
   {
     return getVersion(version);
   }
 
 
-  /** Get a version range
-   *
-   * @param vstring
-   * @return
+  /**
+   * Get a version range
    */
-  public static IVersionRange getRange(String vstring)
+  public IVersionRange getRange(String vstring) throws InvalidRangeException
   {
     if (vstring == null || vstring.isEmpty()) {
       IVersion version = new NamedVersion("");
@@ -135,41 +154,53 @@ public class VersionFactory
       RangeContext context = parser.range();
 
       ParseTreeWalker walker = new ParseTreeWalker();
-      VersionListener listener = new VersionListener();
+      VersionListener listener = new VersionListener(strict);
       walker.walk(listener, context);
 
       IVersionRange range = listener.getRange();
       if (errorListener.hasErrors()) {
+        if (strict) {
+          throw new InvalidRangeException("Parse errors on " + vstring);
+        }
         range.setHasErrors(true);
       }
       return range;
     }
     catch (EmptyStackException e) {
-      System.err.println("Could not parse: " + vstring);
-      e.printStackTrace();
+      if (strict) {
+        throw new InvalidRangeException(e);
+      }
+      System.err.println("ERROR: Could not parse: " + vstring);
+    }
+    catch (InvalidRangeRuntimeException e) {
+      // These are always critical. They indicate a fundamental problem with the version range.
+      throw new InvalidRangeException(e.getMessage(), e);
     }
     catch (Exception e) {
-      System.err.println("Could not parse: " + vstring);
-      e.printStackTrace();
+      // Parse errors and wot not will come here
+      if (strict) {
+        throw new InvalidRangeException(e);
+      }
+      System.err.println("ERROR: Could not parse: " + vstring);
     }
+
+    // Fall back to a named version
     IVersion version = new NamedVersion(vstring);
     return new VersionSet(version);
   }
 
-  /** Join this set of ranges together. This could result in a set, or in a
+  /**
+   * Join this set of ranges together. This could result in a set, or in a
    * logical range.
-   *
-   * @param versions
-   * @return
    */
-  public static IVersionRange getRange(String[] versions)
+  public IVersionRange getRange(String[] versions) throws InvalidRangeException
   {
     if (versions == null) {
       return null;
     }
     IVersionRange results = null;
     for (String version : versions) {
-      IVersionRange range = VersionFactory.getRange(version);
+      IVersionRange range = getRange(version);
       if (results == null) {
         results = range;
       }
@@ -180,21 +211,19 @@ public class VersionFactory
     return results;
   }
 
-  /** Join this set of ranges together. This could result in a set, or in a
+  /**
+   * Join this set of ranges together. This could result in a set, or in a
    * logical range.
-   *
-   * @param versions
-   * @return
    */
-  public static IVersionRange getRange(Collection<String> versions) {
+  public IVersionRange getRange(Collection<String> versions) throws InvalidRangeException {
     if (versions == null) {
       return null;
     }
     return getRange(versions.toArray(new String[versions.size()]));
   }
 
-  public static boolean isMavenRange(String vstring) {
-    IVersionRange range = VersionFactory.getRange(vstring);
+  public boolean isMavenRange(String vstring) throws InvalidRangeException {
+    IVersionRange range = getRange(vstring);
     return "maven".equals(range.getType());
   }
 
@@ -204,9 +233,9 @@ public class VersionFactory
    *
    * For example:
    *
-   *   >1.0.0 merged with (<2.0.0 | >3.0.0) will become (>1.0.0 <2.0.0 | >3.0.0)
+   * >1.0.0 merged with (<2.0.0 | >3.0.0) will become (>1.0.0 <2.0.0 | >3.0.0)
    */
-  public static IVersionRange merge(IVersionRange... ranges) {
+  public IVersionRange merge(IVersionRange... ranges) {
     if (ranges.length < 2) {
       return ranges[0];
     }

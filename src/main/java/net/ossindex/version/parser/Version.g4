@@ -4,24 +4,6 @@ grammar Version;
 }
 
 @parser::members {
-	// From: http://stackoverflow.com/questions/29060496/allow-whitespace-sections-antlr4/29115489#29115489
-	/** We can enable and disable whitespace, which is required for some special
-	 * parsing rules.
-	 */
-	 /*
-	public void enableWs() {
-	    if (_input instanceof MultiChannelTokenStream) {
-	        ((MultiChannelTokenStream) _input).enable(HIDDEN);
-	    }
-	}
-	
-	public void disableWs() {
-	    if (_input instanceof MultiChannelTokenStream) {
-	        ((MultiChannelTokenStream) _input).disable(HIDDEN);
-	    }
-	}
-	*/
-	
 	/**
 	 * Returns true if there is whitespace ahead in the HIDDEN channel.
 	 */
@@ -34,6 +16,13 @@ grammar Version;
 		
 		int type = ahead.getType();
 		return (type == WS);
+	}
+
+        /**
+         * No whitespace in the HIDDEN channel
+         */
+	private boolean nw() {
+	  return !whitespace();
 	}
 }
 
@@ -149,30 +138,43 @@ prefixed_version
  * though they may not strictly match. Close enough to handle in this one place.
  */
 postfix_version
-	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER identifier
-	| NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.' identifier
-	| NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '-' identifier
-	| NUMBER '.' NUMBER '.' NUMBER identifier
-	| NUMBER '.' NUMBER '.' NUMBER '.' identifier
-	| NUMBER '.' NUMBER '.' NUMBER '-' identifier
-	| NUMBER '.' NUMBER identifier
-	| NUMBER '.' NUMBER '.' identifier
-	| NUMBER '.' NUMBER '-' identifier
+	: NUMBER dot NUMBER dot NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER dot NUMBER dot NUMBER {nw()}? identifier
+	| NUMBER dot NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER dot NUMBER {nw()}? identifier
+	| NUMBER dot NUMBER sep identifier
+	| NUMBER dot NUMBER {nw()}? identifier
 	;
 
 /** Simple numeric matching. Strip trailing dots if they exist.
  */
 numeric_version
-	: NUMBER '.' NUMBER '.' NUMBER '.' NUMBER '.'?
-	| NUMBER '.' NUMBER '.' NUMBER '.'?
-	| NUMBER '.' NUMBER '.'?
-	| NUMBER '.'?
+	: NUMBER dot NUMBER dot NUMBER dot NUMBER dot?
+	| NUMBER dot NUMBER dot NUMBER dot?
+	| NUMBER dot NUMBER dot?
+	| NUMBER dot?
 	;
 
-/** A fall back for when all else fails
+sep
+  : {nw()}? (
+    '.' | '_' | '-'
+  ) {nw()}?;
+
+/** Do we need to loosen this up to allow spaces around dots?
  */
-named_version
-	: any+
+dot : {nw()}? '.' {nw()}?;
+
+/** A fall back for when all else fails. Spaces are not valid in named versions, regardless.
+ */
+named_version : valid_named_version;
+
+/** Named versions can contain all sorts of crazy values. We try and avoid completely invalid named
+ * versions by disallowing certain "special characters" that should never be used in a named version
+ * unless the developer is particularly mad.
+ */
+valid_named_version
+	: any
+	| any {nw()}? valid_named_version
 	;
 
 /** Note that identifier is NOT GREEDY.

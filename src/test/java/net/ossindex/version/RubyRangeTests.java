@@ -14,16 +14,16 @@ public class RubyRangeTests
 {
 
   @Test
-  public void simplePessimistic() {
-    IVersionRange range = VersionFactory.getRange("~> 1.9.3.484");
+  public void simplePessimistic()  throws InvalidRangeException {
+    IVersionRange range = VersionFactory.getVersionFactory().getRange("~> 1.9.3.484");
     assertNotNull(range);
     assertEquals(">=1.9.3.484 <1.9.4.0", range.toString());
 
-    range = VersionFactory.getRange("~> 1.9.3");
+    range = VersionFactory.getVersionFactory().getRange("~> 1.9.3");
     assertNotNull(range);
     assertEquals(">=1.9.3 <1.10.0", range.toString());
 
-    range = VersionFactory.getRange("~> 1.9");
+    range = VersionFactory.getVersionFactory().getRange("~> 1.9");
     assertNotNull(range);
     assertEquals(">=1.9.0 <2.0.0", range.toString());
   }
