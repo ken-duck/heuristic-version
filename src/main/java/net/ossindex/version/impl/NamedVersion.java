@@ -26,22 +26,36 @@
  */
 package net.ossindex.version.impl;
 
-import net.ossindex.version.IVersion;
+import java.util.regex.Pattern;
 
-/** Simple version that is based on name comparisons. This should be used as
+import net.ossindex.version.IVersion;
+import net.ossindex.version.InvalidRangeException;
+
+/**
+ * Simple version that is based on name comparisons. This should be used as
  * a last resort.
  *
  * @author Ken Duck
- *
  */
 public class NamedVersion
     implements IVersion
 {
+  // These characters have special meaning for semantic ranges, so should not be in named versions
+  private static final Pattern SEMANTIC_RANGE_SPECIAL_CHARS = Pattern.compile("[><=|&]");
+
+  // Maven ranges start with ( or [, so we should not allow any version wih these characters to become named versions
+  private static final Pattern SET_RANGE_SPECIAL_CHARS = Pattern.compile("^[\\(\\[]");
+
+  // We just won't let these characters happen in a named version because that would be madness
+  private static final Pattern INVALID_VERSION_CHARS = Pattern.compile("[ \t\n\r]");
 
   private String name;
 
-  public NamedVersion(String name)
+  public NamedVersion(String name) throws InvalidRangeException
   {
+    if (!isValidNamedVersion(name)) {
+      throw new InvalidRangeException("Could not parse: " + name);
+    }
     this.name = name;
   }
 
@@ -131,5 +145,19 @@ public class NamedVersion
   public String toString()
   {
     return name;
+  }
+
+  /**
+   * People use all sorts of whack characters in version. We are just excluding
+   * the smallest set that we can.
+   */
+  private boolean isValidNamedVersion(final String s) {
+    if (SEMANTIC_RANGE_SPECIAL_CHARS.matcher(s).find()
+        || SET_RANGE_SPECIAL_CHARS.matcher(s).find()
+        || INVALID_VERSION_CHARS.matcher(s).find()
+        ) {
+      return false;
+    }
+    return true;
   }
 }

@@ -32,26 +32,39 @@ import java.util.regex.Pattern;
 
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
+import net.ossindex.version.InvalidRangeException;
+import net.ossindex.version.InvalidRangeRuntimeException;
 import net.ossindex.version.parser.VersionBaseListener;
 import net.ossindex.version.parser.VersionParser;
 
-/** Listener for the version parser.
+/**
+ * Listener for the version parser.
  *
  * This converts all the various versions and ranges we can find to
  * semantic versions and ranges.
  *
  * @author Ken Duck
- *
  */
 public class VersionListener
     extends VersionBaseListener
 {
   private static final Pattern numericHasLeadingZeroes = Pattern.compile(("\\b0+"));
+
   private static final Pattern startsWithDigitLetterOrHyphen = Pattern.compile("^[0-9a-zA-Z\\-]");
+
+  private final boolean strict;
 
   private Stack<Object> stack = new Stack<Object>();
 
   private IVersionRange range;
+
+  public VersionListener() {
+    this.strict = false;
+  }
+
+  public VersionListener(final boolean strict) {
+    this.strict = strict;
+  }
 
   public IVersionRange getRange()
   {
@@ -86,7 +99,8 @@ public class VersionListener
         try {
           int patch = Integer.parseInt(ctx.getChild(4).getText());
           version = new SemanticVersion(major, minor, patch);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
           // This can happen if the number is a long. In this case we will force it to be an identifier as a reassonable
           // work-around.
           version = new SemanticVersion(major + "." + minor + ".0-" + ctx.getChild(4).getText());
@@ -125,8 +139,8 @@ public class VersionListener
     stack.push(postfix);
   }
 
-  /** Simple semantic version
-   *
+  /**
+   * Simple semantic version
    */
   @Override
   public void exitPostfix_version(VersionParser.Postfix_versionContext ctx)
@@ -134,7 +148,11 @@ public class VersionListener
     SemanticVersion version = null;
 
     int count = ctx.getChildCount();
-    String postfix = (String)stack.pop();
+    Object o = stack.pop();
+    if (!(o instanceof String)) {
+      throw new InvalidRangeRuntimeException("Expected string, got " + o.getClass().getSimpleName() + " (" + o + ")");
+    }
+    String postfix = (String) o;
     switch (count) {
       case 4: {
         //1.2.3alpha
@@ -226,11 +244,18 @@ public class VersionListener
   @Override
   public void exitNamed_version(VersionParser.Named_versionContext ctx)
   {
-    IVersion version = new NamedVersion(ctx.getText());
+    IVersion version = null;
+    try {
+      version = new NamedVersion(ctx.getText());
+    }
+    catch (InvalidRangeException e) {
+      throw new InvalidRangeRuntimeException(e.getMessage(), e);
+    }
     stack.push(version);
   }
 
-  /** Get whatever is on the stack and make a version range out of it
+  /**
+   * Get whatever is on the stack and make a version range out of it
    *
    * @see net.ossindex.version.parser.VersionBaseListener#exitRange(net.ossindex.version.parser.VersionParser.RangeContext)
    */
@@ -248,7 +273,8 @@ public class VersionListener
 
   }
 
-  /** A simple range.
+  /**
+   * A simple range.
    *
    * < 1.2.5
    *
@@ -277,11 +303,12 @@ public class VersionListener
       stack.push(range);
     }
     else {
-      throw new AssertionError("Expected a semantic version, got a " + o.getClass().getSimpleName());
+      throw new InvalidRangeRuntimeException("Expected a semantic version, got a " + o.getClass().getSimpleName());
     }
   }
 
-  /** Set of versions
+  /**
+   * Set of versions
    *
    * @see net.ossindex.version.parser.VersionBaseListener#exitVersion_set(net.ossindex.version.parser.VersionParser.Version_setContext)
    */
@@ -306,12 +333,7 @@ public class VersionListener
     if (ctx.getChildCount() == 2) {
       Object o1 = stack.pop();
       Object o2 = stack.pop();
-      try {
-        stack.push(new AndRange((IVersionRange) o2, (IVersionRange) o1));
-      }
-      catch (AssertionError e) {
-        e.printStackTrace();
-      }
+      stack.push(new AndRange((IVersionRange) o2, (IVersionRange) o1));
     }
     // Three tokens may be and OR or OR a bracketed version
     else if (ctx.getChildCount() == 3) {
@@ -483,4 +505,13 @@ public class VersionListener
     }
   }
 
+  /**
+   * In strict mode we will want to disallow broken ranges
+   */
+  @Override
+  public void exitBroken_range(VersionParser.Broken_rangeContext ctx) {
+    if (strict) {
+      throw new InvalidRangeRuntimeException("Cannot create 'broken' range in strict mode");
+    }
+  }
 }

@@ -28,11 +28,13 @@ package net.ossindex.version.impl;
 
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
+import net.ossindex.version.InvalidRangeException;
+import net.ossindex.version.InvalidRangeRuntimeException;
 
-/** Two ranges anded together
+/**
+ * Two ranges anded together
  *
  * @author Ken Duck
- *
  */
 public class AndRange
     extends AbstractCommonRange
@@ -54,11 +56,11 @@ public class AndRange
   /**
    * And the ranges, ordering them in Vor's preferred order.
    */
-  public AndRange(IVersionRange range1, IVersionRange range2)
+  public AndRange(IVersionRange range1, IVersionRange range2) throws InvalidRangeRuntimeException
   {
     // The ranges should intersect
     if (!range1.intersects(range2)) {
-      throw new AssertionError(
+      throw new InvalidRangeRuntimeException(
           "Anded ranges do not intersect; this can never happen [" + range1 + " & " + range2 + "]");
     }
 

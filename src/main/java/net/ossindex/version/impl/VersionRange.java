@@ -28,14 +28,13 @@ package net.ossindex.version.impl;
 
 import java.util.Collection;
 
-import com.sun.javafx.binding.StringFormatter;
 import net.ossindex.version.IVersion;
 import net.ossindex.version.IVersionRange;
 
-/** A bounded version range is capped at both ends, for example 1.2.5 - 1.2.8
+/**
+ * A bounded version range is capped at both ends, for example 1.2.5 - 1.2.8
  *
  * @author Ken Duck
- *
  */
 public class VersionRange
     extends AbstractCommonRange
@@ -207,10 +206,11 @@ public class VersionRange
         mavenString = "(%s,)";
         break;
       default:
-       toString();
+        toString();
     }
     return String.format(mavenString, version);
   }
+
   /*
    * (non-Javadoc)
    * @see net.ossindex.version.IVersionRange#intersects(net.ossindex.version.IVersionRange)
@@ -225,10 +225,41 @@ public class VersionRange
     // If the other range is a simple range, then we can just check the extremities
     // to see if they overlap
     else if (yourRange instanceof VersionRange) {
-      if (yourRange.contains(version)) {
+      IVersion useMyVersion = null;
+      switch (operator) {
+        case ">":
+          useMyVersion = version.getNextVersion();
+          break;
+        case "<":
+          useMyVersion = version.getPrevVersion();
+          break;
+        default:
+          useMyVersion = version;
+          break;
+      }
+      if (yourRange.contains(useMyVersion)) {
         return true;
       }
-      if (this.contains(((VersionRange) yourRange).version)) {
+
+      IVersion useYourVersion = null;
+      switch (((VersionRange) yourRange).operator) {
+        case ">":
+          useYourVersion = ((VersionRange) yourRange).version.getNextVersion();
+          break;
+        case "<":
+          useYourVersion = ((VersionRange) yourRange).version.getPrevVersion();
+          break;
+        default:
+          useYourVersion = ((VersionRange) yourRange).version;
+          break;
+      }
+      if (this.contains(useYourVersion)) {
+        return true;
+      }
+
+      // Special case: Versions right next to each other >1.2.6 & <1.2.7
+      // There may be micro-versions or snapshot versions between them
+      if (this.version.equals(useYourVersion) && ((VersionRange) yourRange).version.equals(useMyVersion)) {
         return true;
       }
     }
