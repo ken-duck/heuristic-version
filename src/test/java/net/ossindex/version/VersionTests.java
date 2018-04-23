@@ -413,6 +413,13 @@ public class VersionTests
     assertEquals("2015.04.01", range.toString());
   }
 
+  @Test
+  public void testLongSuffix() throws IOException
+  {
+    IVersionRange range = parseVersion("1.6.0.Final-redhat-1");
+    assertNotNull(range);
+    assertEquals("1.6.0-Final-redhat-1", range.toString());
+  }
 
 
   /** Common test code

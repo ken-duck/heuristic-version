@@ -257,4 +257,13 @@ public class VersionRangeTest
       assertFalse("Strict mode does not expect an exception", true);
     }
   }
+
+  @Test
+  public void testLongSuffix() throws InvalidRangeException {
+    IVersionRange range = VersionFactory.getVersionFactory()
+        .getRange(">=1.6.0.Final-redhat-1 <3.0.0.CR1");
+    assertNotNull(range);
+    assertEquals("[>=1.6.0-Final-redhat-1,<3.0.0-CR1)", range.toMavenString());
+  }
+
 }
