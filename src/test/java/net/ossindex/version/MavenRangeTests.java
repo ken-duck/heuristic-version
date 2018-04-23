@@ -185,14 +185,50 @@ public class MavenRangeTests
   }
 
   /**
-   * These are invalid ranges
+   * These are invalid ranges, for both strict and unstrict mode
    */
   @Test
   public void invalidRangeTest() {
+    String name = "(1.2.19,1.2.19]";
     try {
-      String name = "(1.2.19,1.2.19]";
       IVersionRange range = VersionFactory.getVersionFactory().getRange(name);
       assertFalse("Range should be considered invalid: " + name, true);
+    }
+    catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * These are invalid ranges
+   */
+  @Test
+  @Parameters({
+      "[ - ]",
+      "[ - )",
+      "( - ]",
+      "( - )",
+      "[]",
+      "-",
+      "*",
+      ""
+  })
+  public void strictlyInvalidRanges(String name) {
+    try {
+      IVersionRange range = VersionFactory.getStrictVersionFactory().getRange(name);
+      assertFalse("Range should be considered invalid: " + name + " (" + range + ")", true);
+    }
+    catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void strictlyInvalidRanges1() {
+    try {
+      String name = "";
+      IVersionRange range = VersionFactory.getStrictVersionFactory().getRange(name);
+      assertFalse("Range should be considered invalid: " + name + " (" + range + ")", true);
     }
     catch (InvalidRangeException e) {
       e.printStackTrace();

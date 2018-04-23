@@ -132,8 +132,12 @@ public class VersionFactory
   public IVersionRange getRange(String vstring) throws InvalidRangeException
   {
     if (vstring == null || vstring.isEmpty()) {
-      IVersion version = new NamedVersion("");
-      return new VersionSet(version);
+      if (strict) {
+        throw new InvalidRangeException("Cannot have an empty version");
+      } else {
+        IVersion version = new NamedVersion("");
+        return new VersionSet(version);
+      }
     }
     try {
       InputStream stream = new ByteArrayInputStream(vstring.getBytes(StandardCharsets.UTF_8));

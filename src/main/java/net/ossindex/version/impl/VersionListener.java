@@ -316,6 +316,17 @@ public class VersionListener
   public void exitVersion_set(VersionParser.Version_setContext ctx)
   {
     Object o1 = stack.pop();
+    if (strict && (o1 instanceof NamedVersion)) {
+      String name = o1.toString();
+      // FIXME: There needs to be a better way to identify illegal named versions. Perhaps insist it contains an alphanumeric?
+      switch(name.trim()) {
+        case "-":
+        case "_":
+          throw new InvalidRangeRuntimeException("Invalid named version: " + o1);
+        default:
+          break;
+      }
+    }
     if (stack.isEmpty()) {
       VersionSet set = new VersionSet((IVersion) o1);
       stack.push(set);
@@ -404,6 +415,10 @@ public class VersionListener
       IVersionRange r1 = (IVersionRange) stack.pop();
       IVersionRange r2 = (IVersionRange) stack.pop();
       stack.push(new OrRange(r2, r1));
+    } else {
+      if (strict) {
+        throw new InvalidRangeRuntimeException("Cannot have an empty set range");
+      }
     }
   }
 

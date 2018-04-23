@@ -151,7 +151,7 @@ public class NamedVersion
    * People use all sorts of whack characters in version. We are just excluding
    * the smallest set that we can.
    */
-  private boolean isValidNamedVersion(final String s) {
+  public boolean isValidNamedVersion(final String s) {
     if (SEMANTIC_RANGE_SPECIAL_CHARS.matcher(s).find()
         || SET_RANGE_SPECIAL_CHARS.matcher(s).find()
         || INVALID_VERSION_CHARS.matcher(s).find()
