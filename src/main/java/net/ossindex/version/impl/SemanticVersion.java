@@ -332,4 +332,25 @@ public class SemanticVersion
         throw new UnsupportedOperationException();
     }
   }
+
+  /**
+   * Get the top of a version range when following Semantic Versionings "caret" semantics.
+   *
+   * https://docs.npmjs.com/misc/semver
+   */
+  public SemanticVersion getNextCaretVersion() {
+    int major = head.getMajorVersion();
+    int minor = head.getMinorVersion();
+    int patch = head.getPatchVersion();
+
+    if (major != 0) {
+      return new SemanticVersion(++major, 0, 0);
+    }
+
+    if (minor != 0) {
+      return new SemanticVersion(major, ++minor, 0);
+    }
+
+    return new SemanticVersion(major, minor, ++patch);
+  }
 }

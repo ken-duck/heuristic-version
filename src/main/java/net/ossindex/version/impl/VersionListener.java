@@ -274,6 +274,29 @@ public class VersionListener
   }
 
   /**
+   * Special semantic version type ranges
+   */
+  @Override
+  public void exitSemantic_range(VersionParser.Semantic_rangeContext ctx) {
+    String operator = ctx.getChild(0).getText();
+    Object o = stack.pop();
+    if (o instanceof SemanticVersion) {
+      switch (operator) {
+        case "^":
+          SemanticVersion sv = (SemanticVersion) o;
+          VersionRange from = new VersionRange(">=", sv);
+          VersionRange to = new VersionRange("<", sv.getNextCaretVersion());
+          range = new AndRange(from, to);
+          break;
+      }
+      stack.push(range);
+    }
+    else {
+      throw new InvalidRangeRuntimeException("Expected a semantic version, got a " + o.getClass().getSimpleName());
+    }
+  }
+
+  /**
    * A simple range.
    *
    * < 1.2.5
@@ -319,7 +342,7 @@ public class VersionListener
     if (strict && (o1 instanceof NamedVersion)) {
       String name = o1.toString();
       // FIXME: There needs to be a better way to identify illegal named versions. Perhaps insist it contains an alphanumeric?
-      switch(name.trim()) {
+      switch (name.trim()) {
         case "-":
         case "_":
           throw new InvalidRangeRuntimeException("Invalid named version: " + o1);
@@ -415,7 +438,8 @@ public class VersionListener
       IVersionRange r1 = (IVersionRange) stack.pop();
       IVersionRange r2 = (IVersionRange) stack.pop();
       stack.push(new OrRange(r2, r1));
-    } else {
+    }
+    else {
       if (strict) {
         throw new InvalidRangeRuntimeException("Cannot have an empty set range");
       }

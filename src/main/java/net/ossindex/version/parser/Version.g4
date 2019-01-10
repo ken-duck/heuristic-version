@@ -64,9 +64,14 @@ broken_range
 	;
 
 range_type
-	: logical_range
+	: semantic_range
+	| logical_range
 	| simple_range
 	;
+
+semantic_range
+        : '^' version
+        ;
 
 union_range
 	: version OR union_range

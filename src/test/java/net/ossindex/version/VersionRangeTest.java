@@ -117,10 +117,9 @@ public class VersionRangeTest
    * FIXME: This test should be enabled and fixed
    */
   @Test
-  @Ignore
   public void testCaretRange() throws InvalidRangeException
   {
-    IVersionRange range = VersionFactory.getVersionFactory().getRange("^1.2.3");
+    IVersionRange range = VersionFactory.getStrictVersionFactory().getRange("^1.2.3");
     assertNotNull(range);
     assertEquals(">=1.2.3 <2.0.0", range.toString());
 
