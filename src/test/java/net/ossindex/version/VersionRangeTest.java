@@ -265,4 +265,28 @@ public class VersionRangeTest
     assertEquals("[1.6.0-Final-redhat-1,3.0.0-CR1)", range.toMavenString());
   }
 
+  @Test
+  public void testOpenSSLSuffix() throws InvalidRangeException {
+    IVersionRange range = VersionFactory.getVersionFactory()
+        .getRange(">=1.1.1 <1.1.1c");
+    assertNotNull(range);
+    assertEquals("[1.1.1],[1.1.1-a],[1.1.1-b],[1.1.1-c]", range.toMavenString());
+  }
+
+  @Test
+  public void testOpenSSLSuffix2() throws InvalidRangeException {
+    IVersionRange range = VersionFactory.getVersionFactory()
+        .getRange(">=1.1.1a <1.1.1c");
+    assertNotNull(range);
+    assertEquals("[1.1.1-a],[1.1.1-b],[1.1.1-c]", range.toMavenString());
+  }
+
+  @Test
+  public void testOpenSSLSuffix3() throws InvalidRangeException {
+    IVersionRange range = VersionFactory.getVersionFactory()
+        .getRange(">=1.1.0 <1.1.1c");
+    assertNotNull(range);
+    assertEquals("[1.1.0,1.1.1],[1.1.1-a],[1.1.1-b],[1.1.1-c]", range.toMavenString());
+  }
+
 }
