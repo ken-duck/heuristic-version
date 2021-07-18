@@ -1,0 +1,3 @@
+tools = [fsb]
+
+jdk11 = true
