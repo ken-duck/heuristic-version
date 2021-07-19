@@ -1,3 +1,4 @@
-tools = ["FindSecBugs"]
+customTools = [".lift/markdown_tool.py"]
+tools = []
 
 jdk11 = true
