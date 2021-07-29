@@ -5,5 +5,4 @@ This is a flexible wrapper class that can take version strings of multiple style
 
 The code is a massive hack, but it seems to do the trick.
 
-
 I make use of jsemver where possible (https://github.com/zafarkhaja/jsemver)
