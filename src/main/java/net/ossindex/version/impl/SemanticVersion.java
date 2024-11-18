@@ -47,6 +47,8 @@ public class SemanticVersion
 
   protected Version head;
 
+  protected PostscriptPattern postscriptPattern;
+
   /**
    * Remember the number of significant digits when created. This is important
    * for some methods.
@@ -155,6 +157,10 @@ public class SemanticVersion
     throw new UnsupportedOperationException();
   }
 
+  public boolean isPrerelease() {
+    return head.getPreReleaseVersion() != null;
+  }
+
   /*
    * (non-Javadoc)
    * @see java.lang.Object#equals(java.lang.Object)
@@ -222,7 +228,10 @@ public class SemanticVersion
    */
   public boolean isStable()
   {
-    return true;
+    System.err.println("PRERELEASE: " + head.getPreReleaseVersion());
+    System.err.println("METADATA: " + head.getBuildMetadata());
+    System.err.println("NORMAL: " + head.getNormalVersion());
+    return head.getPreReleaseVersion() == null;
   }
 
   /** Get the SemVer instance.
@@ -352,5 +361,22 @@ public class SemanticVersion
     }
 
     return new SemanticVersion(major, minor, ++patch);
+  }
+
+  public void setPostscriptPattern(final PostscriptPattern postscriptPattern) {
+    this.postscriptPattern = postscriptPattern;
+  }
+
+  public boolean hasPostfixMatch(final SemanticVersion v2) {
+    // Simple string match
+    if (postscriptPattern.toString().equals(v2.postscriptPattern.toString())) {
+      return true;
+    }
+
+    if (postscriptPattern.matches(v2.postscriptPattern)) {
+      return true;
+    }
+
+    return false;
   }
 }

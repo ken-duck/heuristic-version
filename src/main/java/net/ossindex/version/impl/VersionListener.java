@@ -56,6 +56,8 @@ public class VersionListener
 
   private Stack<Object> stack = new Stack<Object>();
 
+  private PostscriptPattern postscriptPattern = new PostscriptPattern();
+
   private IVersionRange range;
 
   public VersionListener() {
@@ -157,7 +159,7 @@ public class VersionListener
       case 4: {
         //1.2.3alpha
         switch (postfix.toUpperCase()) {
-          case "RELEASE":
+          //case "RELEASE":
           case "FINAL":
           case "GA":
             version = new SemanticVersion(
@@ -235,6 +237,9 @@ public class VersionListener
         break;
       }
     }
+
+    version.setPostscriptPattern(postscriptPattern);
+
     stack.push(version);
   }
 
@@ -553,4 +558,20 @@ public class VersionListener
       throw new InvalidRangeRuntimeException("Cannot create 'broken' range in strict mode");
     }
   }
+
+  @Override
+  public void exitNumeric_segment(VersionParser.Numeric_segmentContext ctx) {
+    postscriptPattern.pushNumericSegment(ctx.getText());
+  }
+
+  @Override
+  public void exitCharacter_segment(VersionParser.Character_segmentContext ctx) {
+    postscriptPattern.pushCharacterSegment(ctx.getText());
+  }
+
+  @Override
+  public void enterSeparator(VersionParser.SeparatorContext ctx) {
+    postscriptPattern.pushSeparator(ctx.getText());
+  }
+
 }

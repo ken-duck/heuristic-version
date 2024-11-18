@@ -186,18 +186,38 @@ valid_named_version
  * We need special handling of the first character
  */
 identifier
-	: ~('.' | '-' | '&' | OR | ',') any*?
+	: ~('.' | '-' | '&' | OR | ',') (numeric_segment | character_segment | separator)*?
 	;
+
+numeric_segment
+        : NUMBER
+        ;
+
+character_segment
+        : string
+        ;
+
+string:
+  LETTER+
+  ;
+
+separator
+        : '-'
+        | '_'
+        | '+'
+        | '.'
+        ;
 
 /** "any" exclusive of comparison operators and such
  */
 any
-	: ANY
+	: LETTER
 	| '-'
 	| '_'
 	| '.'
 	| '~'
 	| NUMBER
+	| '+'
 	;
 
 /** This is a bit of a kludge, since it will also match ||| and |||| which are
@@ -207,16 +227,13 @@ OR
 	: '|'+
 	;
 
+LETTER
+        : 'a'..'z'
+	| 'A'..'Z'
+        ;
+
 NUMBER
 	: ('0'..'9')+
-	;
-
-ANY
-	: 'a'..'z'
-	| 'A'..'Z'
-	| '0'..'9'
-	| '+'
-	| NUMBER
 	;
 
 WS
